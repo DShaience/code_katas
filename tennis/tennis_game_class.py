@@ -11,6 +11,8 @@ class Tennis:
     }
 
     def __init__(self):
+    DEUCE = 'Deuce'
+    ADVANTAGE = 'Advantage'
         self.group_1_score = 0
         self.group_2_score = 0
 
@@ -26,10 +28,24 @@ class Tennis:
             return False
 
     def is_deuce(self, score_1: int, score_2: int):
-        return score_1 == self.SIMPLE_GAME_SCORE_THRESHOLD and score_2 == self.SIMPLE_GAME_SCORE_THRESHOLD
+        if score_1 == self.SIMPLE_GAME_SCORE_THRESHOLD and score_2 == self.SIMPLE_GAME_SCORE_THRESHOLD:
+            return True
+        elif score_1 == score_2 and score_1 > self.SIMPLE_GAME_SCORE_THRESHOLD:
+            return True
+        else:
+            return False
 
     def simple_phase_score_translator(self, score_1, score_2):
         return [self.SIMPLE_PHASE_SCORING_TRANSLATOR[score_1], self.SIMPLE_PHASE_SCORING_TRANSLATOR[score_2]]
+
+    def advanced_phase_score_translator(self, score_1, score_2):
+        if self.is_deuce(score_1, score_2):
+            return [self.DEUCE]
+        elif score_1 > score_2:
+            return [self.ADVANTAGE, None]
+        else:
+            return [None, self.ADVANTAGE]
+
 
 
     # def play(self):

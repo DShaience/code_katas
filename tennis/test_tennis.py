@@ -31,6 +31,7 @@ class TestStringMethods(unittest.TestCase):
         [3, 3, True],
         [0, 3, False],
         [4, 3, False],
+        [5, 5, True],
     ])
     def test_is_deuce(self, score_1, score_2, expected):
         self.assertEqual(self.game.is_deuce(score_1, score_2), expected)
@@ -44,6 +45,17 @@ class TestStringMethods(unittest.TestCase):
     ])
     def test__simple_phase_score_translator(self, score_1, score_2, expected):
         self.assertEqual(self.game.simple_phase_score_translator(score_1, score_2), expected)
+
+    @parameterized.expand([
+        [3, 3, ['Deuce']],
+        [4, 4, ['Deuce']],
+        [3, 4, [None, 'Advantage']],
+        [4, 3, ['Advantage', None]],
+        [8, 7, ['Advantage', None]],
+    ])
+    def test_advanced_phase_score_translator(self, score_1, score_2, expected):
+        self.assertEqual(self.game.advanced_phase_score_translator(score_1, score_2), expected)
+
 
 
 
