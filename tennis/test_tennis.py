@@ -44,7 +44,7 @@ class TestStringMethods(unittest.TestCase):
         [3, 2, ['40', '30']],
     ])
     def test__simple_phase_score_translator(self, score_1, score_2, expected):
-        self.assertEqual(self.game.simple_phase_score_translator(score_1, score_2), expected)
+        self.assertEqual(self.game.simple_phase_scorer(score_1, score_2), expected)
 
     @parameterized.expand([
         [3, 3, [Tennis.DEUCE]],
@@ -54,7 +54,7 @@ class TestStringMethods(unittest.TestCase):
         [8, 7, [Tennis.ADVANTAGE, None]],
     ])
     def test_advanced_phase_score_translator(self, score_1, score_2, expected):
-        self.assertEqual(self.game.advanced_phase_score_translator(score_1, score_2), expected)
+        self.assertEqual(self.game.advanced_phase_scorer(score_1, score_2), expected)
 
     @parameterized.expand([
         [5, 3, [Tennis.VICTORY, None]],
@@ -62,4 +62,14 @@ class TestStringMethods(unittest.TestCase):
     ])
     def test_get_victorious(self, score_1, score_2, expected):
         self.assertEqual(self.game.get_victorious(score_1, score_2), expected)
+
+    @parameterized.expand([
+        [12345, [3, 5]],
+        [101010, [2, 4]],
+    ])
+    def test_play(self, seed, expected):
+        match = Tennis(seed)
+        match.play(verbose=True)
+        self.assertEqual([match.group_1_score, match.group_2_score], expected)
+
 
