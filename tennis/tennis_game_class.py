@@ -1,6 +1,7 @@
 
 class Tennis:
     MIN_VICTORY_SCORE = 4
+    SIMPLE_GAME_SCORE_THRESHOLD = 3
 
     def __init__(self):
         self.group_1_score = 0
@@ -8,6 +9,15 @@ class Tennis:
 
     def is_victory(self, score_1: int, score_2: int):
         return (abs(score_1 - score_2) >= 2) and any([score >= self.MIN_VICTORY_SCORE for score in [score_1, score_2]])
+
+    def is_simple_game_phase(self, score_1: int, score_2: int):
+        if score_1 == self.SIMPLE_GAME_SCORE_THRESHOLD & score_2 == self.SIMPLE_GAME_SCORE_THRESHOLD :
+            return False
+        elif score_1 <= self.SIMPLE_GAME_SCORE_THRESHOLD and score_2 <= self.SIMPLE_GAME_SCORE_THRESHOLD:
+            return True
+        else:
+            return False
+
 
 
 
