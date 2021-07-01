@@ -27,6 +27,13 @@ class TestStringMethods(unittest.TestCase):
     def test_is_simple_game_phase(self, score_1, score_2, expected):
         self.assertEqual(self.game.is_simple_game_phase(score_1, score_2), expected)
 
+    @parameterized.expand([
+        [3, 3, True],
+        [0, 3, False],
+        [4, 3, False],
+    ])
+    def test_is_deuce(self, score_1, score_2, expected):
+        self.assertEqual(self.game.is_deuce(score_1, score_2), expected)
 
 
 
