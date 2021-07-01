@@ -47,15 +47,19 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(self.game.simple_phase_score_translator(score_1, score_2), expected)
 
     @parameterized.expand([
-        [3, 3, ['Deuce']],
-        [4, 4, ['Deuce']],
-        [3, 4, [None, 'Advantage']],
-        [4, 3, ['Advantage', None]],
-        [8, 7, ['Advantage', None]],
+        [3, 3, [Tennis.DEUCE]],
+        [4, 4, [Tennis.DEUCE]],
+        [3, 4, [None, Tennis.ADVANTAGE]],
+        [4, 3, [Tennis.ADVANTAGE, None]],
+        [8, 7, [Tennis.ADVANTAGE, None]],
     ])
     def test_advanced_phase_score_translator(self, score_1, score_2, expected):
         self.assertEqual(self.game.advanced_phase_score_translator(score_1, score_2), expected)
 
-
-
+    @parameterized.expand([
+        [5, 3, [Tennis.VICTORY, None]],
+        [3, 5, [None, Tennis.VICTORY]],
+    ])
+    def test_get_victorious(self, score_1, score_2, expected):
+        self.assertEqual(self.game.get_victorious(score_1, score_2), expected)
 
