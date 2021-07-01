@@ -28,6 +28,13 @@ class Tennis:
     def is_deuce(self, score_1: int, score_2: int):
         return score_1 == self.SIMPLE_GAME_SCORE_THRESHOLD and score_2 == self.SIMPLE_GAME_SCORE_THRESHOLD
 
+    def simple_phase_score_translator(self, score_1, score_2):
+        return [self.SIMPLE_PHASE_SCORING_TRANSLATOR[score_1], self.SIMPLE_PHASE_SCORING_TRANSLATOR[score_2]]
+
+
+    # def play(self):
+    #     while not self.is_victory(self.group_1_score, self.group_2_score):
+
 
 
 

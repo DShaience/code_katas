@@ -1,4 +1,3 @@
 # code_katas
-
-Tennis Kata<br>
+Solving the Tennis code kata<br>
 https://codingdojo.org/kata/Tennis/
