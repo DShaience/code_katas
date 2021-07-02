@@ -3,7 +3,7 @@ from tennis_game_class import Tennis
 from parameterized import parameterized
 
 
-class TestStringMethods(unittest.TestCase):
+class TestTennisGame(unittest.TestCase):
     def setUp(self) -> None:
         self.game = Tennis()
 
