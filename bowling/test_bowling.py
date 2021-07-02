@@ -1,6 +1,4 @@
 import unittest
-from unittest import TestCase
-
 from bowling_class import Bowling
 from parameterized import parameterized
 
@@ -24,5 +22,14 @@ class TestBowling(unittest.TestCase):
     ])
     def test_calc_strike_score(self, last_frames, expected):
         self.assertEqual(self.game.calc_strike_score(last_frames), expected)
+
+    @parameterized.expand([
+        [[10], 10],
+        [[1], 1],
+        [[], 0],
+        [[0], 0],
+    ])
+    def test_calc_spare_score(self, last_frames, expected):
+        self.assertEqual(self.game.calc_spare_score(last_frames), expected)
 
 
