@@ -19,13 +19,6 @@ class Bowling:
         self.round_type = [None] * (self.GAME_NUMBER_FRAMES + 2)
         self.number_of_played_rounds = 0
 
-        # todo: allow for custom player_skills distributions (for the sake of the kata, create several skill 'presets'
-        # Default skill level: chances of hitting any number of pins from 0 to 10 is uniform
-        # this is of course unrealistic
-        # self.player_skill = player_skill  # the skill is array that contains probability of player to hit number of pins. The nth<->n+1 elements convey the probability to hit n pins
-        # if self.player_skill is None:
-        #     self.player_skill = np.linspace(0, 1, self.NUMBER_OF_PINS + 1)
-
     def is_final_frame(self, frame: int):
         return frame == self.GAME_NUMBER_FRAMES
 
@@ -39,7 +32,23 @@ class Bowling:
     def calc_spare_score(self, previous_frames_pins: List[int]):
         return self.calc_strike_score(previous_frames_pins)
 
-    # def play_frame(self):
-        
+    @staticmethod
+    def throw_ball(rand_pins_probability: float):
+        assert 0 <= rand_pins_probability <= 1.0, "random pins probability must be a probability, i.e., [0, 1]"
+        number_of_hit_pins = int(round(rand_pins_probability*10, 0))
+        return number_of_hit_pins
 
+
+    # def play_frame(self):
+
+
+
+
+
+    # todo: allow for custom player_skills distributions (for the sake of the kata, create several skill 'presets'
+    # Default skill level: chances of hitting any number of pins from 0 to 10 is uniform
+    # this is of course unrealistic
+    # self.player_skill = player_skill  # the skill is array that contains probability of player to hit number of pins. The nth<->n+1 elements convey the probability to hit n pins
+    # if self.player_skill is None:
+    #     self.player_skill = np.linspace(0, 1, self.NUMBER_OF_PINS + 1)
 
