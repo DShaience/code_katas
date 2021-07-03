@@ -3,11 +3,11 @@ from enum import Enum
 import numpy as np
 
 
-class RoundTypes(Enum):
-    NormalRound = 0
+class FrameTypes(Enum):
+    NormalFrame = 0
     Spare = 1
     Strike = 2
-    FinalRound = 3
+    FinalFrame = 3
 
 
 class Bowling:
@@ -18,8 +18,8 @@ class Bowling:
         self.random_state = np.random.RandomState(seed)
         self.scores = [np.nan] * (self.GAME_NUMBER_FRAMES + 2)
         self.pins = [np.nan] * (self.GAME_NUMBER_FRAMES + 2)
-        self.round_type = [np.nan] * (self.GAME_NUMBER_FRAMES + 2)
-        self.number_of_played_rounds = 0  # each round may have up to 2 throws ("frames")
+        self.frame_type = [np.nan] * (self.GAME_NUMBER_FRAMES + 2)
+        self.number_of_played_frames = 0  # each frame may have up to 2 throws ("frames")
 
     def is_final_frame(self, frame: int):
         return frame == self.GAME_NUMBER_FRAMES
@@ -42,15 +42,15 @@ class Bowling:
             print(number_of_hit_pins)
         return number_of_hit_pins
 
-    def calc_round_type(self, number_of_hit_pins: int, number_of_throws: int, frame_idx: int):
+    def calc_frame_type(self, number_of_hit_pins: int, number_of_throws: int, frame_idx: int):
         if frame_idx >= self.GAME_NUMBER_FRAMES:
-            return RoundTypes.FinalRound
+            return FrameTypes.FinalFrame
         elif number_of_hit_pins < self.NUMBER_OF_PINS:
-            return RoundTypes.NormalRound
+            return FrameTypes.NormalFrame
         elif number_of_throws == 2:
-            return RoundTypes.Spare
+            return FrameTypes.Spare
         else:
-            return RoundTypes.Strike
+            return FrameTypes.Strike
 
     def play_frame(self, frame_idx: int):
         number_of_throws = 1
@@ -58,18 +58,18 @@ class Bowling:
         if pins < self.NUMBER_OF_PINS:
             pins = min([self.NUMBER_OF_PINS, pins + self.throw_ball(self.random_state.random_sample(1)[0])])
             number_of_throws += 1
-        round_type = self.calc_round_type(pins, number_of_throws, frame_idx)
+        frame_type = self.calc_frame_type(pins, number_of_throws, frame_idx)
 
-        return pins, number_of_throws, round_type
+        return pins, number_of_throws, frame_type
 
     def play_game(self):
-        is_last_round = False
+        is_last_frame = False
         frame_idx = 0
-        while not is_last_round:
-            pins, number_of_throws, round_type = self.play_frame(frame_idx)
+        while not is_last_frame:
+            pins, number_of_throws, frame_type = self.play_frame(frame_idx)
             self.pins[frame_idx] = pins
-            self.round_type[frame_idx] = round_type
-            if round_type == RoundTypes.NormalRound:
+            self.frame_type[frame_idx] = frame_type
+            if frame_type == FrameTypes.NormalFrame:
                 self.scores[frame_idx] = pins
 
             frame_idx += 1
@@ -77,7 +77,7 @@ class Bowling:
 
         # self.scores = [None] * (self.GAME_NUMBER_FRAMES + 2)
         # self.pins = [None] * (self.GAME_NUMBER_FRAMES + 2)
-        # self.round_type = [None] * (self.GAME_NUMBER_FRAMES + 2)
+        # self.frame_type = [None] * (self.GAME_NUMBER_FRAMES + 2)
 
 
 
