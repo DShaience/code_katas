@@ -7,6 +7,7 @@ class RoundTypes(Enum):
     NormalRound = 0
     Spare = 1
     Strike = 2
+    FinalRound = 3
 
 
 class Bowling:
@@ -15,9 +16,9 @@ class Bowling:
 
     def __init__(self, seed=12345):
         self.random_state = np.random.RandomState(seed)
-        self.scores = [None] * (self.GAME_NUMBER_FRAMES + 2)
-        self.pins = [None] * (self.GAME_NUMBER_FRAMES + 2)
-        self.round_type = [None] * (self.GAME_NUMBER_FRAMES + 2)
+        self.scores = [np.nan] * (self.GAME_NUMBER_FRAMES + 2)
+        self.pins = [np.nan] * (self.GAME_NUMBER_FRAMES + 2)
+        self.round_type = [np.nan] * (self.GAME_NUMBER_FRAMES + 2)
         self.number_of_played_rounds = 0  # each round may have up to 2 throws ("frames")
 
     def is_final_frame(self, frame: int):
@@ -41,23 +42,44 @@ class Bowling:
             print(number_of_hit_pins)
         return number_of_hit_pins
 
-    def calc_round_type(self, number_of_hit_pins: int, number_of_throws: int):
-        if number_of_hit_pins < self.NUMBER_OF_PINS:
+    def calc_round_type(self, number_of_hit_pins: int, number_of_throws: int, frame_idx: int):
+        if frame_idx >= self.GAME_NUMBER_FRAMES:
+            return RoundTypes.FinalRound
+        elif number_of_hit_pins < self.NUMBER_OF_PINS:
             return RoundTypes.NormalRound
         elif number_of_throws == 2:
             return RoundTypes.Spare
         else:
             return RoundTypes.Strike
 
-    def play_frame(self):
+    def play_frame(self, frame_idx: int):
         number_of_throws = 1
         pins = self.throw_ball(self.random_state.random_sample(1)[0])
         if pins < self.NUMBER_OF_PINS:
             pins = min([self.NUMBER_OF_PINS, pins + self.throw_ball(self.random_state.random_sample(1)[0])])
             number_of_throws += 1
-        round_type = self.calc_round_type(pins, number_of_throws)
+        round_type = self.calc_round_type(pins, number_of_throws, frame_idx)
 
         return pins, number_of_throws, round_type
+
+    def play_game(self):
+        is_last_round = False
+        frame_idx = 0
+        while not is_last_round:
+            pins, number_of_throws, round_type = self.play_frame(frame_idx)
+            self.pins[frame_idx] = pins
+            self.round_type[frame_idx] = round_type
+            if round_type == RoundTypes.NormalRound:
+                self.scores[frame_idx] = pins
+
+            frame_idx += 1
+            # if
+
+        # self.scores = [None] * (self.GAME_NUMBER_FRAMES + 2)
+        # self.pins = [None] * (self.GAME_NUMBER_FRAMES + 2)
+        # self.round_type = [None] * (self.GAME_NUMBER_FRAMES + 2)
+
+
 
 
     # todo: allow for custom player_skills distributions (for the sake of the kata, create several skill 'presets'

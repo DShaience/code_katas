@@ -63,27 +63,30 @@ class TestBowling(unittest.TestCase):
         self.assertEqual(self.game.throw_ball(probability_input), expected)
 
     @parameterized.expand([
-        [5, 1, RoundTypes.NormalRound],
-        [10, 2, RoundTypes.Spare],
-        [10, 1, RoundTypes.Strike],
+        [5, 1, 1, RoundTypes.NormalRound],
+        [10, 2, 1, RoundTypes.Spare],
+        [10, 1, 1, RoundTypes.Strike],
+        [8, 1, 10, RoundTypes.FinalRound],
+        [8, 1, 11, RoundTypes.FinalRound],
     ])
-    def test_calc_round_type(self, number_of_hit_pins, number_of_throws, expected):
-        self.assertEqual(self.game.calc_round_type(number_of_hit_pins, number_of_throws), expected)
+    def test_calc_round_type(self, number_of_hit_pins, number_of_throws, frame_idx, expected):
+        self.assertEqual(self.game.calc_round_type(number_of_hit_pins, number_of_throws, frame_idx), expected)
 
     @staticmethod
-    def _test_frame_type(numbers_stream: List[float]):
+    def _test_frame_type(numbers_stream: List[float], frame_idx):
         test_game = Bowling()
         test_game.random_state.insert_mock_numbers_stream(numbers_stream)
-        return test_game.play_frame()
+        return test_game.play_frame(frame_idx)
 
     @parameterized.expand([
-        [[0.3, 0.4], 7, 2, RoundTypes.NormalRound],
-        [[0.6, 0.4], 10, 2, RoundTypes.Spare],
-        [[1.0], 10, 1, RoundTypes.Strike],
+        [[0.3, 0.4], 1, 7, 2, RoundTypes.NormalRound],
+        [[0.6, 0.4], 1, 10, 2, RoundTypes.Spare],
+        [[1.0], 1, 10, 1, RoundTypes.Strike],
     ])
     @patch.object(np.random, 'RandomState', MockRandomState)
-    def test_play_frame(self, numbers_stream, pins, number_of_throws, round_type):
-        self.assertEqual(self._test_frame_type(numbers_stream), (pins, number_of_throws, round_type))
+    def test_play_frame(self, numbers_stream, frame_idx, pins, number_of_throws, round_type):
+        self.assertEqual(self._test_frame_type(numbers_stream, frame_idx), (pins, number_of_throws, round_type))
+
 
 
 
