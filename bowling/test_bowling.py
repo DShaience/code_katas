@@ -1,6 +1,26 @@
 import unittest
 from bowling_class import Bowling, RoundTypes
 from parameterized import parameterized
+from unittest.mock import patch
+import numpy as np
+from typing import List
+
+
+class MockRandomState:
+    def __init__(self, mock_seed: int = None):
+        self.numbers_stream = []
+        self.mock_seed = mock_seed  # unused
+
+    def insert_mock_numbers_stream(self, numbers_stream: List[float]):
+        assert len(numbers_stream) > 0, "Numbers set must be 1 or more elements"
+        numbers_stream.reverse()
+        self.numbers_stream = numbers_stream
+
+    def random_sample(self, n):
+        assert n > 0, "Can't sample less than 1 number"
+        assert n <= len(self.numbers_stream), "Not enough numbers in predefined numbers_stream"
+        sampled_numbers = np.array([self.numbers_stream.pop() for i in range(0, n)])
+        return sampled_numbers
 
 
 class TestBowling(unittest.TestCase):
@@ -40,7 +60,7 @@ class TestBowling(unittest.TestCase):
         [1.0, 10],
     ])
     def test_throw_ball(self, probability_input, expected):
-        self.assertEquals(self.game.throw_ball(probability_input), expected)
+        self.assertEqual(self.game.throw_ball(probability_input), expected)
 
     @parameterized.expand([
         [5, 1, RoundTypes.NormalRound],
@@ -50,8 +70,35 @@ class TestBowling(unittest.TestCase):
     def test_calc_round_type(self, number_of_hit_pins, number_of_throws, expected):
         self.assertEqual(self.game.calc_round_type(number_of_hit_pins, number_of_throws), expected)
 
+    # # @patch.object(np.random.RandomState, 'random_sample', MockRandomState.random_sample)
+    # # @patch.object(np.random.RandomState.random_sample, '',MockRandomState.random_sample)
+    # # @unittest.mock.patch('numpy.random.RandomState', MockRandomState)
+    # # @patch.object(np.random, 'RandomState', MockRandomState)
+    # def test_play_frame(self):
+    #     # mock_random_state = MockRandomState()
+    #     # mock_random_state.insert_mock_numbers_stream([1, 2, 3, 4, 5])
+    #     test_game = Bowling()
+    #     # test_game.random_state.insert_mock_numbers_stream([1, 2, 3, 4, 5])
+    #     mock_random_state = MockRandomState()
+    #     mock_random_state.insert_mock_numbers_stream([0.1, 0.2, 0.3, 0.4, 0.5, 0.6])
+    #     test_game.random_state = mock_random_state
+    #     print("TRYING MOCK RANDOM STATE")
+    #     test_game.play_frame()
+    #     test_game.play_frame()
+    #     test_game.play_frame()
+    #     print("END TRY")
+    #     pass
 
-
+    @patch.object(np.random, 'RandomState', MockRandomState)
+    def test_play_frame(self):
+        test_game = Bowling()
+        test_game.random_state.insert_mock_numbers_stream([0.1, 0.2, 0.3, 0.4, 0.5, 0.6])
+        print("TRYING MOCK RANDOM STATE")
+        test_game.play_frame()
+        test_game.play_frame()
+        test_game.play_frame()
+        print("END TRY")
+        pass
 
 
 
