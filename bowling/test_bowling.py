@@ -70,25 +70,6 @@ class TestBowling(unittest.TestCase):
     def test_calc_round_type(self, number_of_hit_pins, number_of_throws, expected):
         self.assertEqual(self.game.calc_round_type(number_of_hit_pins, number_of_throws), expected)
 
-    # # @patch.object(np.random.RandomState, 'random_sample', MockRandomState.random_sample)
-    # # @patch.object(np.random.RandomState.random_sample, '',MockRandomState.random_sample)
-    # # @unittest.mock.patch('numpy.random.RandomState', MockRandomState)
-    # # @patch.object(np.random, 'RandomState', MockRandomState)
-    # def test_play_frame(self):
-    #     # mock_random_state = MockRandomState()
-    #     # mock_random_state.insert_mock_numbers_stream([1, 2, 3, 4, 5])
-    #     test_game = Bowling()
-    #     # test_game.random_state.insert_mock_numbers_stream([1, 2, 3, 4, 5])
-    #     mock_random_state = MockRandomState()
-    #     mock_random_state.insert_mock_numbers_stream([0.1, 0.2, 0.3, 0.4, 0.5, 0.6])
-    #     test_game.random_state = mock_random_state
-    #     print("TRYING MOCK RANDOM STATE")
-    #     test_game.play_frame()
-    #     test_game.play_frame()
-    #     test_game.play_frame()
-    #     print("END TRY")
-    #     pass
-
     @patch.object(np.random, 'RandomState', MockRandomState)
     def test_play_frame(self):
         test_game = Bowling()
