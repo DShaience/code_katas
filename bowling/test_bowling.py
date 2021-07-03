@@ -28,29 +28,12 @@ class TestBowling(unittest.TestCase):
         self.game = Bowling()
 
     @parameterized.expand([
-        [10, True],
-        [9, False],
-        [11, False],
+        [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 1, FrameTypes.NormalFrame, 2],
+        [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 9, FrameTypes.Spare, 21],
+        [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 9, FrameTypes.Strike, 33],
     ])
-    def test_is_final_frame(self, frame, expected):
-        self.assertEqual(self.game.is_final_frame(frame), expected)
-
-    @parameterized.expand([
-        [[10, 10], 20],
-        [[1], 1],
-        [[], 0],
-    ])
-    def test_calc_strike_score(self, last_frames, expected):
-        self.assertEqual(self.game.calc_strike_score(last_frames), expected)
-
-    @parameterized.expand([
-        [[10], 10],
-        [[1], 1],
-        [[], 0],
-        [[0], 0],
-    ])
-    def test_calc_spare_score(self, last_frames, expected):
-        self.assertEqual(self.game.calc_spare_score(last_frames), expected)
+    def test_calc_score(self, pins, frame_idx, frame_type, expected):
+        self.assertEqual(self.game.calc_score(pins, frame_idx, frame_type), expected)
 
     @parameterized.expand([
         [0.0, 0],
@@ -86,6 +69,27 @@ class TestBowling(unittest.TestCase):
     @patch.object(np.random, 'RandomState', MockRandomState)
     def test_play_frame(self, numbers_stream, frame_idx, pins, number_of_throws, frame_type):
         self.assertEqual(self._test_frame_type(numbers_stream, frame_idx), (pins, number_of_throws, frame_type))
+
+    @parameterized.expand([
+        [0, FrameTypes.NormalFrame, True],
+        [4, FrameTypes.Spare, True],
+        [4, FrameTypes.Strike, True],
+        [9, FrameTypes.NormalFrame, False],
+        [9, FrameTypes.Spare, True],
+        [10, FrameTypes.Spare, True],
+        [10, FrameTypes.Strike, True],
+        [11, FrameTypes.Strike, True],
+    ])
+    def test_continue_game_indicator(self, frame_idx, pre_final_frame_type, expected):
+        self.assertEqual(self.game.continue_game_indicator(frame_idx, pre_final_frame_type), expected)
+
+
+
+
+
+
+
+
 
 
 
