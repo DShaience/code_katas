@@ -18,7 +18,7 @@ class Bowling:
         self.scores = [None] * (self.GAME_NUMBER_FRAMES + 2)
         self.pins = [None] * (self.GAME_NUMBER_FRAMES + 2)
         self.round_type = [None] * (self.GAME_NUMBER_FRAMES + 2)
-        self.number_of_played_rounds = 0
+        self.number_of_played_rounds = 0  # each round may have up to 2 throws ("frames")
 
     def is_final_frame(self, frame: int):
         return frame == self.GAME_NUMBER_FRAMES
@@ -37,6 +37,7 @@ class Bowling:
     def throw_ball(rand_pins_probability: float):
         assert 0 <= rand_pins_probability <= 1.0, "random pins probability must be a probability, i.e., [0, 1]"
         number_of_hit_pins = int(round(rand_pins_probability*10, 0))
+        print(number_of_hit_pins)
         return number_of_hit_pins
 
     def calc_round_type(self, number_of_hit_pins: int, number_of_throws: int):
@@ -47,12 +48,15 @@ class Bowling:
         else:
             return RoundTypes.Strike
 
-    # def play_frame(self):
-    #     final_frame = False
-    #     while not final_frame:
+    def play_frame(self):
+        number_of_throws = 1
+        pins = self.throw_ball(self.random_state.random_sample(1)[0])
+        if pins < self.NUMBER_OF_PINS:
+            pins = min([self.NUMBER_OF_PINS, pins + self.throw_ball(self.random_state.random_sample(1)[0])])
+            number_of_throws += 1
+        round_type = self.calc_round_type(pins, number_of_throws)
 
-
-
+        return pins, number_of_throws, round_type
 
 
     # todo: allow for custom player_skills distributions (for the sake of the kata, create several skill 'presets'
