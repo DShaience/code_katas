@@ -2,8 +2,9 @@ from typing import List
 from enum import Enum
 import numpy as np
 
+
 class RoundTypes(Enum):
-    Normal = 0
+    NormalRound = 0
     Spare = 1
     Strike = 2
 
@@ -38,8 +39,17 @@ class Bowling:
         number_of_hit_pins = int(round(rand_pins_probability*10, 0))
         return number_of_hit_pins
 
+    def calc_round_type(self, number_of_hit_pins: int, number_of_throws: int):
+        if number_of_hit_pins < self.NUMBER_OF_PINS:
+            return RoundTypes.NormalRound
+        elif number_of_throws == 2:
+            return RoundTypes.Spare
+        else:
+            return RoundTypes.Strike
 
     # def play_frame(self):
+    #     final_frame = False
+    #     while not final_frame:
 
 
 
