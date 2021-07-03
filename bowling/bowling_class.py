@@ -34,10 +34,11 @@ class Bowling:
         return self.calc_strike_score(previous_frames_pins)
 
     @staticmethod
-    def throw_ball(rand_pins_probability: float):
+    def throw_ball(rand_pins_probability: float, verbose: bool = False):
         assert 0 <= rand_pins_probability <= 1.0, "random pins probability must be a probability, i.e., [0, 1]"
         number_of_hit_pins = int(round(rand_pins_probability*10, 0))
-        print(number_of_hit_pins)
+        if verbose:
+            print(number_of_hit_pins)
         return number_of_hit_pins
 
     def calc_round_type(self, number_of_hit_pins: int, number_of_throws: int):

@@ -70,17 +70,20 @@ class TestBowling(unittest.TestCase):
     def test_calc_round_type(self, number_of_hit_pins, number_of_throws, expected):
         self.assertEqual(self.game.calc_round_type(number_of_hit_pins, number_of_throws), expected)
 
-    @patch.object(np.random, 'RandomState', MockRandomState)
-    def test_play_frame(self):
+    @staticmethod
+    def _test_frame_type(numbers_stream: List[float]):
         test_game = Bowling()
-        test_game.random_state.insert_mock_numbers_stream([0.1, 0.2, 0.3, 0.4, 0.5, 0.6])
-        print("TRYING MOCK RANDOM STATE")
-        test_game.play_frame()
-        test_game.play_frame()
-        test_game.play_frame()
-        print("END TRY")
-        pass
+        test_game.random_state.insert_mock_numbers_stream(numbers_stream)
+        return test_game.play_frame()
 
+    @parameterized.expand([
+        [[0.3, 0.4], 7, 2, RoundTypes.NormalRound],
+        [[0.6, 0.4], 10, 2, RoundTypes.Spare],
+        [[1.0], 10, 1, RoundTypes.Strike],
+    ])
+    @patch.object(np.random, 'RandomState', MockRandomState)
+    def test_play_frame(self, numbers_stream, pins, number_of_throws, round_type):
+        self.assertEqual(self._test_frame_type(numbers_stream), (pins, number_of_throws, round_type))
 
 
 
