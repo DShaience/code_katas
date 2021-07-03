@@ -7,7 +7,7 @@ class FrameTypes(Enum):
     NormalFrame = 0
     Spare = 1
     Strike = 2
-    FinalFrame = 3
+    # FinalFrame = 3
 
 
 class Bowling:
@@ -35,6 +35,8 @@ class Bowling:
         return pins[frame_idx]
 
     def calc_score(self, pins, frame_idx, frame_type):
+        if frame_idx >= self.GAME_NUMBER_FRAMES:
+            return 0
         if frame_type == FrameTypes.NormalFrame:
             return self.calc_normal_score(pins, frame_idx)
         elif frame_type == FrameTypes.Spare:
@@ -52,7 +54,7 @@ class Bowling:
 
     def calc_frame_type(self, number_of_hit_pins: int, number_of_throws: int, frame_idx: int):
         if frame_idx >= self.GAME_NUMBER_FRAMES:
-            return FrameTypes.FinalFrame
+            return FrameTypes.NormalFrame
         elif number_of_hit_pins < self.NUMBER_OF_PINS:
             return FrameTypes.NormalFrame
         elif number_of_throws == 2:
@@ -84,7 +86,7 @@ class Bowling:
             return False
 
     def game_scorer(self, pins: list, frame_types: list):
-        frame_scores = [pins[beginning_frames] for beginning_frames in range(0, 2)]
+        frame_scores = []
         for frame_idx in range(0, self.GAME_NUMBER_FRAMES + 2):
             if pins[frame_idx] is np.nan:
                 continue
@@ -101,8 +103,9 @@ class Bowling:
             self.pins[frame_idx] = pins
             self.frame_type[frame_idx] = frame_type
 
-
-
+        self.scores = self.game_scorer(self.pins, self.frame_type)
+        self.final_score = sum(self.scores)
+        print(f"final score: {self.final_score}")
 
 
 
