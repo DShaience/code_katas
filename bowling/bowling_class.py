@@ -10,6 +10,15 @@ class FrameTypes(Enum):
     # FinalFrame = 3
 
 
+class Frame:
+    def __init__(self, pins_round_list=None, frame_type=None):
+        if pins_round_list is None:
+            self.round = []
+        else:
+            self.round = pins_round_list
+        self.frame_type = frame_type
+
+
 class Bowling:
     GAME_NUMBER_FRAMES = 10
     NUMBER_OF_PINS = 10
@@ -19,30 +28,44 @@ class Bowling:
         self.scores = [np.nan] * (self.GAME_NUMBER_FRAMES + 2)
         self.pins = [np.nan] * (self.GAME_NUMBER_FRAMES + 2)
         self.frame_type = [np.nan] * (self.GAME_NUMBER_FRAMES + 2)
-        self.number_of_played_frames = 0  # each frame may have up to 2 throws ("frames")
         self.final_score = 0
 
+        # todo: refactor all to use Frame instead of self.pins and self.frame_type.
+        # for now use this to record the result of the frame
+        self.frames: List[Frame] = []
+
     @staticmethod
-    def calc_spare_score(pins: list, frame_idx):
-        return sum(pins[frame_idx: frame_idx + 2])
+    def calc_spare_score(frames: List[Frame], frame_idx):
+        return sum(frames[frame_idx].round) + frames[frame_idx+1].round[0]
 
     @staticmethod
     def calc_strike_score(pins: list, frame_idx):
         return sum(pins[frame_idx: frame_idx + 3])
 
     @staticmethod
-    def calc_normal_score(pins, frame_idx):
-        return pins[frame_idx]
+    def calc_normal_score(frame: Frame):
+        return sum(frame.round)
 
-    def calc_score(self, pins, frame_idx, frame_type):
+    def calc_score(self, frames: List[Frame], frame_idx):
         if frame_idx >= self.GAME_NUMBER_FRAMES:
             return 0
-        if frame_type == FrameTypes.NormalFrame:
-            return self.calc_normal_score(pins, frame_idx)
-        elif frame_type == FrameTypes.Spare:
-            return self.calc_spare_score(pins, frame_idx)
+        if frames[frame_idx].frame_type == FrameTypes.NormalFrame:
+            return self.calc_normal_score(frames[frame_idx])
+        elif frames[frame_idx].frame_type == FrameTypes.Spare:
+            return self.calc_spare_score(frames, frame_idx)
         else:
             return self.calc_strike_score(pins, frame_idx)
+
+    # org. todo: remove
+    # def calc_score(self, pins, frame_idx, frame_type):
+    #     if frame_idx >= self.GAME_NUMBER_FRAMES:
+    #         return 0
+    #     if frame_type == FrameTypes.NormalFrame:
+    #         return self.calc_normal_score(pins, frame_idx)
+    #     elif frame_type == FrameTypes.Spare:
+    #         return self.calc_spare_score(pins, frame_idx)
+    #     else:
+    #         return self.calc_strike_score(pins, frame_idx)
 
     @staticmethod
     def throw_ball(rand_pins_probability: float, verbose: bool = False):
@@ -62,15 +85,34 @@ class Bowling:
         else:
             return FrameTypes.Strike
 
+    # todo: fix to work with frames only
     def play_frame(self, frame_idx: int):
+        frame = Frame()
+
         number_of_throws = 1
         pins = self.throw_ball(self.random_state.random_sample(1)[0])
+        frame.round.append(pins)
         if pins < self.NUMBER_OF_PINS:
             pins = min([self.NUMBER_OF_PINS, pins + self.throw_ball(self.random_state.random_sample(1)[0])])
             number_of_throws += 1
+            frame.round.append(pins)
         frame_type = self.calc_frame_type(pins, number_of_throws, frame_idx)
 
+        frame.frame_type = frame_type
+        self.frames.append(frame)  # fixme: make this a returned value instead
         return pins, number_of_throws, frame_type
+
+    # todo: remove when done
+    # ORG
+    # def play_frame(self, frame_idx: int):
+    #     number_of_throws = 1
+    #     pins = self.throw_ball(self.random_state.random_sample(1)[0])
+    #     frame.pins_round_list.append(pins)
+    #     if pins < self.NUMBER_OF_PINS:
+    #         pins = min([self.NUMBER_OF_PINS, pins + self.throw_ball(self.random_state.random_sample(1)[0])])
+    #         number_of_throws += 1
+    #
+    #     return pins, number_of_throws, frame_type
 
     def continue_game_indicator(self, frame_idx, pre_final_frame_type):
         if frame_idx < self.GAME_NUMBER_FRAMES - 1:
@@ -85,27 +127,28 @@ class Bowling:
         else:
             return False
 
-    def game_scorer(self, pins: list, frame_types: list):
-        frame_scores = []
-        for frame_idx in range(0, self.GAME_NUMBER_FRAMES + 2):
-            if pins[frame_idx] is np.nan:
-                continue
+    # todo: fixme
+    # def game_scorer(self, pins: list, frame_types: list):
+    #     frame_scores = []
+    #     for frame_idx in range(0, self.GAME_NUMBER_FRAMES + 2):
+    #         if pins[frame_idx] is np.nan:
+    #             continue
+    #
+    #         frame_scores.append(self.calc_score(pins, frame_idx, frame_types[frame_idx]))
+    #     return frame_scores
 
-            frame_scores.append(self.calc_score(pins, frame_idx, frame_types[frame_idx]))
-        return frame_scores
-
-    def play_game(self):
-        for frame_idx in range(0, self.GAME_NUMBER_FRAMES + 2):
-            if not self.continue_game_indicator(frame_idx, self.frame_type[frame_idx]):
-                continue
-
-            pins, number_of_throws, frame_type = self.play_frame(frame_idx)
-            self.pins[frame_idx] = pins
-            self.frame_type[frame_idx] = frame_type
-
-        self.scores = self.game_scorer(self.pins, self.frame_type)
-        self.final_score = sum(self.scores)
-        print(f"final score: {self.final_score}")
+    # def play_game(self):
+    #     for frame_idx in range(0, self.GAME_NUMBER_FRAMES + 2):
+    #         if not self.continue_game_indicator(frame_idx, self.frame_type[frame_idx]):
+    #             continue
+    #
+    #         pins, number_of_throws, frame_type = self.play_frame(frame_idx)
+    #         self.pins[frame_idx] = pins
+    #         self.frame_type[frame_idx] = frame_type
+    #
+    #     self.scores = self.game_scorer(self.pins, self.frame_type)
+    #     self.final_score = sum(self.scores)
+    #     print(f"final score: {self.final_score}")
 
 
 
