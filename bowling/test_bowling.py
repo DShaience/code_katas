@@ -48,19 +48,6 @@ class TestBowling(unittest.TestCase):
         self.assertEqual(self.game.calc_frame_type(number_of_hit_pins, number_of_throws, frame_idx), expected)
 
     @parameterized.expand([
-        [0, FrameTypes.NormalFrame, True],
-        [4, FrameTypes.Spare, True],
-        [4, FrameTypes.Strike, True],
-        [9, FrameTypes.NormalFrame, False],
-        [9, FrameTypes.Spare, True],
-        [10, FrameTypes.Spare, True],
-        [10, FrameTypes.Strike, True],
-        [11, FrameTypes.Strike, True],
-    ])
-    def test_continue_game_indicator(self, frame_idx, pre_final_frame_type, expected):
-        self.assertEqual(self.game.continue_game_indicator(frame_idx, pre_final_frame_type), expected)
-
-    @parameterized.expand([
         [Frame([2, 6]), 8],
         [Frame([3, 4]), 7],
     ])
@@ -90,99 +77,29 @@ class TestBowling(unittest.TestCase):
     def test_calc_score(self, frames: List[Frame], frame_idx, expected):
         pass
 
+    @staticmethod
+    def _test_frame_type(numbers_stream: List[float], frame_idx):
+        test_game = Bowling()
+        test_game.random_state.insert_mock_numbers_stream(numbers_stream)
+        return test_game.play_frame(frame_idx)
 
-    tmp_disable = False
-    if tmp_disable:
-        @parameterized.expand([
-            [[0.3, 0.4], 1, 7, 2, FrameTypes.NormalFrame],
-            [[0.6, 0.4], 1, 10, 2, FrameTypes.Spare],
-            [[1.0], 1, 10, 1, FrameTypes.Strike],
-        ])
-        @patch.object(np.random, 'RandomState', MockRandomState)
-        def test_play_frame(self, numbers_stream, frame_idx, pins, number_of_throws, frame_type):
-            self.assertEqual(self._test_frame_type(numbers_stream, frame_idx), (pins, number_of_throws, frame_type))
+    @parameterized.expand([
+        [[0.3, 0.4], 0, Frame([3, 4], FrameTypes.NormalFrame)],
+        [[0.6, 0.4], 0, Frame([6, 4], FrameTypes.Spare)],
+        [[1.0], 0, Frame([10], FrameTypes.Strike)],
+    ])
+    @patch.object(np.random, 'RandomState', MockRandomState)
+    def test_play_frame(self, numbers_stream, frame_idx, expected):
+        self.assertEqual(self._test_frame_type(numbers_stream, frame_idx), expected)
 
-        @staticmethod
-        def _test_frame_type(numbers_stream: List[float], frame_idx):
-            test_game = Bowling()
-            test_game.random_state.insert_mock_numbers_stream(numbers_stream)
-            return test_game.play_frame(frame_idx)
-
-
+    @parameterized.expand([
+        [[Frame([10], frame_type=FrameTypes.Strike)] * Bowling.GAME_NUMBER_FRAMES + [Frame([10], FrameTypes.NormalFrame)] * 2, [30] * Bowling.GAME_NUMBER_FRAMES + [0] * 2],
+        [[Frame([5, 5], frame_type=FrameTypes.Spare)] * Bowling.GAME_NUMBER_FRAMES + [Frame([5], FrameTypes.NormalFrame)], [15] * Bowling.GAME_NUMBER_FRAMES + [0]],
+        [[Frame([9, 0], frame_type=FrameTypes.NormalFrame)] * Bowling.GAME_NUMBER_FRAMES, [9] * Bowling.GAME_NUMBER_FRAMES]
+    ])
+    def test_game_scorer(self, frames, expected):
+        self.assertEqual(self.game.game_scorer(frames), expected)
 
 
-    # fixme: fix this test
-    # @parameterized.expand([
-    #     [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10], 1, FrameTypes.NormalFrame, 2],
-    #     [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10], 9, FrameTypes.Spare, 20],
-    #     [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10], 9, FrameTypes.Strike, 30],
-    # ])
-    # def test_calc_score(self, pins, frame_idx, frame_type, expected):
-    #     self.assertEqual(self.game.calc_score(pins, frame_idx, frame_type), expected)
 
-    # @parameterized.expand([
-        # [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 9],
-        #  [FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame,
-        #   FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame,
-        #   FrameTypes.NormalFrame, FrameTypes.NormalFrame],
-        #  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0]
-        #  ],
-
-        # [[0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 10, 9],
-        #  [FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame,
-        #   FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.Spare,
-        #   FrameTypes.NormalFrame, FrameTypes.NormalFrame],
-        #  [0, 1, 2, 3, 4, 5, 6, 7, 8, 20, 0, 0]
-        #  ],
-        #
-        # [[0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 10, 9],
-        #  [FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame,
-        #   FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.Strike,
-        #   FrameTypes.NormalFrame, FrameTypes.NormalFrame],
-        #  [0, 1, 2, 3, 4, 5, 6, 7, 8, 29, 0, 0]
-        #  ],
-        #
-        # [[0, 1, 2, 3, 10, 5, 6, 7, 8, 9, np.nan, np.nan],
-        #  [FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.Strike,
-        #   FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame, FrameTypes.NormalFrame],
-        #  [0, 1, 2, 3, 21, 5, 6, 7, 8, 9]
-        #  ],
-        #
-        # [[10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
-        #  [FrameTypes.Strike, FrameTypes.Strike, FrameTypes.Strike, FrameTypes.Strike, FrameTypes.Strike,
-        #   FrameTypes.Strike, FrameTypes.Strike, FrameTypes.Strike, FrameTypes.Strike, FrameTypes.Strike,
-        #   FrameTypes.NormalFrame, FrameTypes.NormalFrame],
-        #  [30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 0, 0]
-        #  ],
-        #
-        # [[5, 10, 5, 10, 5, 10, 5, 10, 5, 10, 5, np.nan],
-        #  [FrameTypes.NormalFrame, FrameTypes.Spare, FrameTypes.NormalFrame, FrameTypes.Spare, FrameTypes.NormalFrame,
-        #   FrameTypes.Spare, FrameTypes.NormalFrame, FrameTypes.Spare, FrameTypes.NormalFrame, FrameTypes.Spare,
-        #   FrameTypes.NormalFrame],
-        #  [5, 15, 5, 15, 5, 15, 5, 15, 5, 15, 0]
-        #  ],
-        #
-        # [[10, 5, 10, 5, 10, 5, 10, 5, 10, 5, np.nan, np.nan],
-        #  [FrameTypes.Spare, FrameTypes.NormalFrame, FrameTypes.Spare, FrameTypes.NormalFrame, FrameTypes.Spare,
-        #   FrameTypes.NormalFrame, FrameTypes.Spare, FrameTypes.NormalFrame, FrameTypes.Spare, FrameTypes.NormalFrame],
-        #  [15, 5, 15, 5, 15, 5, 15, 5, 15, 5]
-        #  ],
-
-        # fixme: the all-spare test case should be fixed, along with other spare calculations (see below)
-        # [[10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, np.nan],
-        #  [FrameTypes.Spare, FrameTypes.Spare, FrameTypes.Spare, FrameTypes.Spare, FrameTypes.Spare,
-        #   FrameTypes.Spare, FrameTypes.Spare, FrameTypes.Spare, FrameTypes.Spare, FrameTypes.Spare,
-        #   FrameTypes.NormalFrame
-        #   ],
-        #  [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 0]
-        #  ],
-    # ])
-    # def test_game_scorer(self, pins, frame_types, expected):
-    #     self.assertEqual(self.game.game_scorer(pins, frame_types), expected)
-    #     pass
-
-    # fixme: spare and strike score should only take the FIRST throw in the next frame
-    #  Currently, this by error, takes into account the ENTIRE next frame
-    #  This means that the SEPARATE throws should also be saved to memory and that calc_spare and calc_strike should
-    #  use this new array
 

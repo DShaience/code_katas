@@ -7,16 +7,20 @@ class FrameTypes(Enum):
     NormalFrame = 0
     Spare = 1
     Strike = 2
-    # FinalFrame = 3
 
 
 class Frame:
     def __init__(self, pins_round_list=None, frame_type=None):
         if pins_round_list is None:
-            self.round = []
+            self.round: list = []
         else:
-            self.round = pins_round_list
+            self.round: list = pins_round_list
         self.frame_type = frame_type
+
+    def __eq__(self, other):
+        if isinstance(other, Frame):
+            return (self.round == other.round) and (self.frame_type == other.frame_type)
+        return False
 
 
 class Bowling:
@@ -26,12 +30,8 @@ class Bowling:
     def __init__(self, seed=12345):
         self.random_state = np.random.RandomState(seed)
         self.scores = [np.nan] * (self.GAME_NUMBER_FRAMES + 2)
-        self.pins = [np.nan] * (self.GAME_NUMBER_FRAMES + 2)
-        self.frame_type = [np.nan] * (self.GAME_NUMBER_FRAMES + 2)
         self.final_score = 0
 
-        # todo: refactor all to use Frame instead of self.pins and self.frame_type.
-        # for now use this to record the result of the frame
         self.frames: List[Frame] = []
 
     @staticmethod
@@ -77,7 +77,6 @@ class Bowling:
         else:
             return FrameTypes.Strike
 
-    # todo: fix to work with frames only
     def play_frame(self, frame_idx: int):
         pins_round = []
         pins = self.throw_ball(self.random_state.random_sample(1)[0])
@@ -90,50 +89,40 @@ class Bowling:
         frame = Frame(pins_round, frame_type)
         return frame
 
-    def continue_game_indicator(self, frame_idx, pre_final_frame_type):
-        if frame_idx < self.GAME_NUMBER_FRAMES - 1:
-            return True
-        if pre_final_frame_type == FrameTypes.NormalFrame:
-            return False
-        elif (pre_final_frame_type == FrameTypes.Spare) & (frame_idx < self.GAME_NUMBER_FRAMES + 1):
-            return True
-        elif (pre_final_frame_type == FrameTypes.Strike) & (frame_idx < self.GAME_NUMBER_FRAMES + 2):
-            return True
-        else:
-            return False
+    def game_scorer(self, frames: List[Frame]):
+        frame_scores = []
+        for frame_idx in range(0, len(frames)):
+            frame_scores.append(self.calc_score(frames, frame_idx))
+        return frame_scores
 
-    # todo: fixme
-    # def game_scorer(self, pins: list, frame_types: list):
-    #     frame_scores = []
-    #     for frame_idx in range(0, self.GAME_NUMBER_FRAMES + 2):
-    #         if pins[frame_idx] is np.nan:
-    #             continue
-    #
-    #         frame_scores.append(self.calc_score(pins, frame_idx, frame_types[frame_idx]))
-    #     return frame_scores
+    def print_game_results(self):
+        self.final_score = sum(self.scores)
+        for i, frame in enumerate(self.frames):
+            print(f"Round #{i+1}: Pins: {frame.round} Score: {self.scores[i]}")
+        print()
+        print(f"Final score: {self.final_score}")
 
-    # def play_game(self):
-    #     for frame_idx in range(0, self.GAME_NUMBER_FRAMES + 2):
-    #         if not self.continue_game_indicator(frame_idx, self.frame_type[frame_idx]):
-    #             continue
-    #
-    #         pins, number_of_throws, frame_type = self.play_frame(frame_idx)
-    #         self.pins[frame_idx] = pins
-    #         self.frame_type[frame_idx] = frame_type
-    #
-    #     self.scores = self.game_scorer(self.pins, self.frame_type)
-    #     self.final_score = sum(self.scores)
-    #     print(f"final score: {self.final_score}")
+    def play_game(self):
+        for frame_idx in range(0, self.GAME_NUMBER_FRAMES):
+            frame = self.play_frame(frame_idx)
+            self.frames.append(frame)
+
+        additional_throws_to_play_map = {
+            FrameTypes.NormalFrame: 0,
+            FrameTypes.Spare: 1,
+            FrameTypes.Strike: 2
+        }
+
+        additional_throws_to_play = additional_throws_to_play_map[self.frames[-1].frame_type]
+        if additional_throws_to_play > 0:
+            final_frame = self.play_frame(self.GAME_NUMBER_FRAMES)
+            final_frame.round = final_frame.round[0: additional_throws_to_play]
+            self.frames.append(final_frame)
+
+        self.scores = self.game_scorer(self.frames)
 
 
-
-
-
-
-    # todo: allow for custom player_skills distributions (for the sake of the kata, create several skill 'presets'
-    # Default skill level: chances of hitting any number of pins from 0 to 10 is uniform
-    # this is of course unrealistic
-    # self.player_skill = player_skill  # the skill is array that contains probability of player to hit number of pins. The nth<->n+1 elements convey the probability to hit n pins
-    # if self.player_skill is None:
-    #     self.player_skill = np.linspace(0, 1, self.NUMBER_OF_PINS + 1)
-
+if __name__ == '__main__':
+    my_game = Bowling(12345)
+    my_game.play_game()
+    my_game.print_game_results()
