@@ -76,6 +76,13 @@ class TestBowling(unittest.TestCase):
         self.assertEqual(self.game.continue_game_indicator(frame_idx, pre_final_frame_type), expected)
 
     @parameterized.expand([
+        [Frame([2, 6]), 8],
+        [Frame([3, 4]), 7],
+    ])
+    def test_calc_normal_score(self, frame: Frame, expected):
+        self.assertEqual(self.game.calc_normal_score(frame), expected)
+
+    @parameterized.expand([
         [[Frame([5, 5]), Frame([5, 5])], 0, 15],
         [[Frame([3, 7]), Frame([2, 7])], 0, 12],
     ])
