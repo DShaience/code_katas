@@ -96,10 +96,14 @@ class TestBowling(unittest.TestCase):
     def test_calc_strike_score(self, frames: List[Frame], frame_idx, expected):
         self.assertEqual(self.game.calc_strike_score(frames, frame_idx), expected)
 
-
-        # def calc_strike_score(frames: List[Frame], frame_idx):
-
-    #
+    @parameterized.expand([
+        [[Frame([3, 4], FrameTypes.NormalFrame)], 0, 7],
+        [[Frame([5, 5], FrameTypes.Spare), Frame([3, 8], FrameTypes.NormalFrame), Frame([3, 4], FrameTypes.NormalFrame)], 0, 13],
+        [[Frame([10], FrameTypes.Strike), Frame([5, 5], FrameTypes.Spare), Frame([3, 4], FrameTypes.NormalFrame)], 0, 20],
+        [[Frame() for i in range(0, 12)], 11, 0],
+    ])
+    def test_calc_score(self, frames: List[Frame], frame_idx, expected):
+        pass
 
 
     # fixme: fix this test
