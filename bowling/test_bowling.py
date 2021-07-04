@@ -75,7 +75,7 @@ class TestBowling(unittest.TestCase):
         [[Frame() for i in range(0, 12)], 11, 0],
     ])
     def test_calc_score(self, frames: List[Frame], frame_idx, expected):
-        pass
+        self.assertEqual(self.game.calc_score(frames, frame_idx), expected)
 
     @staticmethod
     def _test_frame_type(numbers_stream: List[float], frame_idx):
