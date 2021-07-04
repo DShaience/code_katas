@@ -59,17 +59,6 @@ class Bowling:
         else:
             return self.calc_strike_score(frames, frame_idx)
 
-    # org. todo: remove
-    # def calc_score(self, pins, frame_idx, frame_type):
-    #     if frame_idx >= self.GAME_NUMBER_FRAMES:
-    #         return 0
-    #     if frame_type == FrameTypes.NormalFrame:
-    #         return self.calc_normal_score(pins, frame_idx)
-    #     elif frame_type == FrameTypes.Spare:
-    #         return self.calc_spare_score(pins, frame_idx)
-    #     else:
-    #         return self.calc_strike_score(pins, frame_idx)
-
     @staticmethod
     def throw_ball(rand_pins_probability: float, verbose: bool = False):
         assert 0 <= rand_pins_probability <= 1.0, "random pins probability must be a probability, i.e., [0, 1]"
@@ -90,37 +79,20 @@ class Bowling:
 
     # todo: fix to work with frames only
     def play_frame(self, frame_idx: int):
-        frame = Frame()
-
-        number_of_throws = 1
+        pins_round = []
         pins = self.throw_ball(self.random_state.random_sample(1)[0])
-        frame.round.append(pins)
+        pins_round.append(pins)
         if pins < self.NUMBER_OF_PINS:
-            pins = min([self.NUMBER_OF_PINS, pins + self.throw_ball(self.random_state.random_sample(1)[0])])
-            number_of_throws += 1
-            frame.round.append(pins)
-        frame_type = self.calc_frame_type(pins, number_of_throws, frame_idx)
+            next_throw_pins = min([self.NUMBER_OF_PINS - pins, self.throw_ball(self.random_state.random_sample(1)[0])])
+            pins_round.append(next_throw_pins)
 
-        frame.frame_type = frame_type
-        self.frames.append(frame)  # fixme: make this a returned value instead
-        return pins, number_of_throws, frame_type
-
-    # todo: remove when done
-    # ORG
-    # def play_frame(self, frame_idx: int):
-    #     number_of_throws = 1
-    #     pins = self.throw_ball(self.random_state.random_sample(1)[0])
-    #     frame.pins_round_list.append(pins)
-    #     if pins < self.NUMBER_OF_PINS:
-    #         pins = min([self.NUMBER_OF_PINS, pins + self.throw_ball(self.random_state.random_sample(1)[0])])
-    #         number_of_throws += 1
-    #
-    #     return pins, number_of_throws, frame_type
+        frame_type = self.calc_frame_type(sum(pins_round), len(pins_round), frame_idx)
+        frame = Frame(pins_round, frame_type)
+        return frame
 
     def continue_game_indicator(self, frame_idx, pre_final_frame_type):
         if frame_idx < self.GAME_NUMBER_FRAMES - 1:
             return True
-
         if pre_final_frame_type == FrameTypes.NormalFrame:
             return False
         elif (pre_final_frame_type == FrameTypes.Spare) & (frame_idx < self.GAME_NUMBER_FRAMES + 1):
