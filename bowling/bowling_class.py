@@ -39,8 +39,11 @@ class Bowling:
         return sum(frames[frame_idx].round) + frames[frame_idx+1].round[0]
 
     @staticmethod
-    def calc_strike_score(pins: list, frame_idx):
-        return sum(pins[frame_idx: frame_idx + 3])
+    def calc_strike_score(frames: List[Frame], frame_idx):
+        score = sum(frames[frame_idx].round) + sum(frames[frame_idx+1].round)
+        if len(frames[frame_idx+1].round) == 1:
+            score += frames[frame_idx+2].round[0]
+        return score
 
     @staticmethod
     def calc_normal_score(frame: Frame):
@@ -54,7 +57,7 @@ class Bowling:
         elif frames[frame_idx].frame_type == FrameTypes.Spare:
             return self.calc_spare_score(frames, frame_idx)
         else:
-            return self.calc_strike_score(pins, frame_idx)
+            return self.calc_strike_score(frames, frame_idx)
 
     # org. todo: remove
     # def calc_score(self, pins, frame_idx, frame_type):
