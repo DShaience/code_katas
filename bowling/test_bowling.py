@@ -100,6 +100,34 @@ class TestBowling(unittest.TestCase):
     def test_game_scorer(self, frames, expected):
         self.assertEqual(self.game.game_scorer(frames), expected)
 
+    @patch.object(np.random, 'RandomState', MockRandomState)
+    def test_play_game(self):
+        test_game = Bowling()
+        numbers_stream = [0.1, 0.3, 0.4, 0.2, 0.1, 0.7,  # 18
+                          0.1, 0.2, 0.3, 0.4, 0.5, 0.5,  # 30
+                          1.0, 1.0, 0.5, 0.5, 0.2, 0.2,  # 25 + 20 + 12 + 2 + 2 = 61
+                          0.2                            # Total: 18 + 30 + 61 = 91 + 18 = 109
+                          ]
+        test_game.random_state.insert_mock_numbers_stream(numbers_stream)
+        test_game.play_game()
+        self.assertEqual(test_game.final_score, 109)
+
+        expected_frame_types = [
+            FrameTypes.NormalFrame,
+            FrameTypes.NormalFrame,
+            FrameTypes.NormalFrame,
+            FrameTypes.NormalFrame,
+            FrameTypes.NormalFrame,
+            FrameTypes.Spare,
+            FrameTypes.Strike,
+            FrameTypes.Strike,
+            FrameTypes.Spare,
+            FrameTypes.NormalFrame
+        ]
+
+        self.assertEqual([frame.frame_type for frame in test_game.frames], expected_frame_types)
+        pass
 
 
-
+    # todo: add player skill to initialization
+    # todo: bonus: add player injury

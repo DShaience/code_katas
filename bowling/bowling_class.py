@@ -96,7 +96,6 @@ class Bowling:
         return frame_scores
 
     def print_game_results(self):
-        self.final_score = sum(self.scores)
         for i, frame in enumerate(self.frames):
             print(f"Round #{i+1}: Pins: {frame.round} Score: {self.scores[i]}")
         print()
@@ -120,6 +119,7 @@ class Bowling:
             self.frames.append(final_frame)
 
         self.scores = self.game_scorer(self.frames)
+        self.final_score = sum(self.scores)
 
 
 if __name__ == '__main__':
