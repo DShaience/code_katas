@@ -1,37 +1,7 @@
 from typing import List
 from enum import Enum
 import numpy as np
-
-
-# todo: add player pins_hit_probability to initialization
-# todo: bonus: add player injury (i.e., update/downgrade pins_hit_probability)
-
-class Player:
-    def __init__(self, pins_hit_probability: List[float], seed: int):
-        """
-        :param pins_hit_probability: the probability of hitting each pin. I.e., [probability of 0 pins, of 1, of 2, ..., of 10]
-        """
-        self.pins_hit_probability = self.is_valid_player_skill(pins_hit_probability)
-        self.random_state = np.random.RandomState(seed)
-        # todo: transform probability to an ascending series from [0, 1.0]
-        #  then the answer to which ball was hit is simply finding the bisect-left value in this array
-
-    @staticmethod
-    def is_valid_player_skill(pins_hit_probability):
-        assert sum(pins_hit_probability) == 1.0, "Probability must add-up to 1.0"
-        assert len(pins_hit_probability) == Bowling.NUMBER_OF_PINS, "The number of probabilities should be equal to the number of pins"
-        return pins_hit_probability
-
-    # todo: Remove throw_ball() method from Bowling()
-    def throw_ball(self, pins_hit_probability: float, verbose: bool = False):
-        hit_pin_roll = self.random_state.random_sample(1)[0]
-
-        pass
-        # assert 0 <= rand_pins_probability <= 1.0, "random pins probability must be a probability, i.e., [0, 1]"
-        # number_of_hit_pins = int(round(rand_pins_probability*10, 0))
-        # if verbose:
-        #     print(number_of_hit_pins)
-        # return number_of_hit_pins
+from math import isclose
 
 
 class FrameTypes(Enum):
@@ -152,6 +122,45 @@ class Bowling:
 
         self.scores = self.game_scorer(self.frames)
         self.final_score = sum(self.scores)
+
+
+
+# todo: add player pins_hit_probability to initialization
+# todo: bonus: add player injury (i.e., update/downgrade pins_hit_probability)
+
+class Player:
+    def __init__(self, pins_hit_probability: List[float]):
+        """
+        :param pins_hit_probability: the probability of hitting each pin. I.e., [probability of 0 pins, of 1, of 2, ..., of 10]
+        """
+        self.pins_hit_probability = self.validate_player_skill(pins_hit_probability)
+        # todo: transform probability to an ascending series from [0, 1.0]
+        #  then the answer to which ball was hit is simply finding the bisect-left value in this array
+
+    @staticmethod
+    def validate_player_skill(pins_hit_probability):
+        probability_sum = sum(pins_hit_probability)
+        if not isclose(probability_sum, 1.0, rel_tol=0.0000001):
+            raise Exception(f"Probability must add-up to 1.0, but instead got: {probability_sum}")
+        if len(pins_hit_probability) != Bowling.NUMBER_OF_PINS:
+            raise Exception(f"The number of probabilities should be equal to the number of pins. Got {len(pins_hit_probability)} instead.")
+        return pins_hit_probability
+
+    # todo: Remove throw_ball() method from Bowling()
+    def throw_ball(self, pins_hit_probability: float, verbose: bool = False):
+        pass
+        # hit_pin_roll = self.random_state.random_sample(1)[0]
+
+        # assert 0 <= rand_pins_probability <= 1.0, "random pins probability must be a probability, i.e., [0, 1]"
+        # number_of_hit_pins = int(round(rand_pins_probability*10, 0))
+        # if verbose:
+        #     print(number_of_hit_pins)
+        # return number_of_hit_pins
+
+
+
+
+
 
 
 if __name__ == '__main__':

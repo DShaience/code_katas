@@ -1,12 +1,11 @@
 import unittest
-from bowling_classes import Bowling, FrameTypes, Frame
+from bowling_classes import Bowling, FrameTypes, Frame, Player
 from parameterized import parameterized
 from unittest.mock import patch
 import numpy as np
 from typing import List
 
 
-# todo: add tests for MockRandomState? Do we add tests for a mock class...?
 class MockRandomState:
     def __init__(self, mock_seed: int = None):
         self.numbers_stream = []
@@ -22,13 +21,6 @@ class MockRandomState:
         assert n <= len(self.numbers_stream), "Not enough numbers in predefined numbers_stream"
         sampled_numbers = np.array([self.numbers_stream.pop() for i in range(0, n)])
         return sampled_numbers
-
-
-class TestPlayer(unittest.TestCase):
-    def setUp(self) -> None:
-        pass
-
-
 
 
 class TestBowling(unittest.TestCase):
@@ -135,5 +127,27 @@ class TestBowling(unittest.TestCase):
 
         self.assertEqual([frame.frame_type for frame in test_game.frames], expected_frame_types)
         pass
+
+
+class TestPlayer(unittest.TestCase):
+    def setUp(self) -> None:
+        pass
+
+    def test_validate_player_skill(self):
+        probabilities = [0.1] * (Bowling.NUMBER_OF_PINS + 1)
+        self.assertRaises(Exception, Player.validate_player_skill, probabilities)
+
+        probabilities = [0.25] * 4
+        self.assertRaises(Exception, Player.validate_player_skill, probabilities)
+
+        probabilities = [0.1] * Bowling.NUMBER_OF_PINS
+        self.assertEqual(Player.validate_player_skill(probabilities), probabilities)
+
+
+
+
+
+
+
 
 
