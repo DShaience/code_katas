@@ -144,7 +144,9 @@ class Player:
         return pins_hit_probability
 
     # todo: Remove throw_ball() method from Bowling()
-    def throw_ball(self, pins_hit_probability: float, verbose: bool = False):
+    @staticmethod
+    def throw_ball(cumulative_probability, throw_probability: float):
+        assert 0.0 <= throw_probability <= 1.0, "Throw probability must be a probability, i.e., a number between [0. 1]"
         pass
         # hit_pin_roll = self.random_state.random_sample(1)[0]
 
@@ -155,8 +157,11 @@ class Player:
         # return number_of_hit_pins
 
     @staticmethod
-    def map_pins_hit_probability_to_cumulative_probability(pins_hit_probability):
-        return [0] + np.cumsum(pins_hit_probability)
+    def map_pins_hit_probability_to_cumulative_probability(pins_hit_probability) -> np.array:
+        cumulative_proba = np.cumsum(pins_hit_probability)
+        cumulative_proba_padded = np.insert(cumulative_proba, 0, 0.0)
+        cumulative_proba_normalized = (cumulative_proba_padded - np.min(cumulative_proba_padded)) / (np.max(cumulative_proba_padded) - np.min(cumulative_proba_padded))
+        return cumulative_proba_normalized
 
 
 if __name__ == '__main__':

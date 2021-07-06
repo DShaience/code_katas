@@ -4,6 +4,7 @@ from parameterized import parameterized
 from unittest.mock import patch
 import numpy as np
 from typing import List
+from math import isclose
 
 
 class MockRandomState:
@@ -145,11 +146,25 @@ class TestPlayer(unittest.TestCase):
 
         [0] + np.cumsum(probabilities)
 
-    def test_map_pins_hit_probability_to_cumulative_probability(self, probabilities):
+    def test_map_pins_hit_probability_to_cumulative_probability(self):
         probabilities = [0.1] * 10
-        expected = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1. ]
-        self.assertEqual(Player.map_pins_hit_probability_to_cumulative_probability(probabilities), expected)
+        expected = np.array([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+        expected_sum = np.sum(expected)
+        test_sum = np.sum(Player.map_pins_hit_probability_to_cumulative_probability(probabilities))
+        self.assertTrue(isclose(test_sum, expected_sum))
 
+        # self.assertEqual(Player.map_pins_hit_probability_to_cumulative_probability(probabilities), expected)
+        # self.assertTrue(np.equal(Player.map_pins_hit_probability_to_cumulative_probability(probabilities), expected))
+
+        # cumul = Player.map_pins_hit_probability_to_cumulative_probability(probabilities)
+        # [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+        # cumul_np = np.array(cumul)
+        # cumul_ranged = (cumul_np - np.min(cumul_np)) / (np.max(cumul_np) - np.min(cumul_np))
+
+        # import bisect
+        # val = 1.0
+        # print(bisect.bisect_left(cumul, val))
+        # print(probabilities)
 
 
 
