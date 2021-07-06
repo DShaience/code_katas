@@ -124,17 +124,14 @@ class Bowling:
         self.final_score = sum(self.scores)
 
 
-
-# todo: add player pins_hit_probability to initialization
 # todo: bonus: add player injury (i.e., update/downgrade pins_hit_probability)
-
 class Player:
     def __init__(self, pins_hit_probability: List[float]):
         """
         :param pins_hit_probability: the probability of hitting each pin. I.e., [probability of 0 pins, of 1, of 2, ..., of 10]
         """
         self.pins_hit_probability = self.validate_player_skill(pins_hit_probability)
-        # todo: transform probability to an ascending series from [0, 1.0]
+        self.cumulative_probability = self.map_pins_hit_probability_to_cumulative_probability(self.pins_hit_probability)
         #  then the answer to which ball was hit is simply finding the bisect-left value in this array
 
     @staticmethod
@@ -157,10 +154,9 @@ class Player:
         #     print(number_of_hit_pins)
         # return number_of_hit_pins
 
-
-
-
-
+    @staticmethod
+    def map_pins_hit_probability_to_cumulative_probability(pins_hit_probability):
+        return [0] + np.cumsum(pins_hit_probability)
 
 
 if __name__ == '__main__':
