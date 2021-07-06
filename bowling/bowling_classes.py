@@ -1,3 +1,4 @@
+import bisect
 from typing import List
 from enum import Enum
 import numpy as np
@@ -144,17 +145,11 @@ class Player:
         return pins_hit_probability
 
     # todo: Remove throw_ball() method from Bowling()
+    # todo: add test for throw_ball
     @staticmethod
     def throw_ball(cumulative_probability, throw_probability: float):
         assert 0.0 <= throw_probability <= 1.0, "Throw probability must be a probability, i.e., a number between [0. 1]"
-        pass
-        # hit_pin_roll = self.random_state.random_sample(1)[0]
-
-        # assert 0 <= rand_pins_probability <= 1.0, "random pins probability must be a probability, i.e., [0, 1]"
-        # number_of_hit_pins = int(round(rand_pins_probability*10, 0))
-        # if verbose:
-        #     print(number_of_hit_pins)
-        # return number_of_hit_pins
+        return bisect.bisect_left(cumulative_probability, throw_probability)
 
     @staticmethod
     def map_pins_hit_probability_to_cumulative_probability(pins_hit_probability) -> np.array:

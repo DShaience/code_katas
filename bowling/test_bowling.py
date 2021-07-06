@@ -5,6 +5,7 @@ from unittest.mock import patch
 import numpy as np
 from typing import List
 from math import isclose
+import bisect
 
 
 class MockRandomState:
@@ -156,13 +157,12 @@ class TestPlayer(unittest.TestCase):
         # self.assertEqual(Player.map_pins_hit_probability_to_cumulative_probability(probabilities), expected)
         # self.assertTrue(np.equal(Player.map_pins_hit_probability_to_cumulative_probability(probabilities), expected))
 
-        # cumul = Player.map_pins_hit_probability_to_cumulative_probability(probabilities)
+        cumul = Player.map_pins_hit_probability_to_cumulative_probability(probabilities)
         # [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
         # cumul_np = np.array(cumul)
         # cumul_ranged = (cumul_np - np.min(cumul_np)) / (np.max(cumul_np) - np.min(cumul_np))
 
-        # import bisect
-        # val = 1.0
+        val = 1.0
         # print(bisect.bisect_left(cumul, val))
         # print(probabilities)
 
