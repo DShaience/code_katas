@@ -1,5 +1,5 @@
 import unittest
-from bowling_class import Bowling, FrameTypes, Frame
+from bowling_classes import Bowling, FrameTypes, Frame
 from parameterized import parameterized
 from unittest.mock import patch
 import numpy as np
@@ -129,5 +129,3 @@ class TestBowling(unittest.TestCase):
         pass
 
 
-    # todo: add player skill to initialization
-    # todo: bonus: add player injury

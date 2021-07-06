@@ -3,6 +3,10 @@ from enum import Enum
 import numpy as np
 
 
+# todo: add player skill to initialization
+# todo: bonus: add player injury
+
+
 class FrameTypes(Enum):
     NormalFrame = 0
     Spare = 1
