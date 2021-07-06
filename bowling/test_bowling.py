@@ -6,6 +6,7 @@ import numpy as np
 from typing import List
 
 
+# todo: add tests for MockRandomState? Do we add tests for a mock class...?
 class MockRandomState:
     def __init__(self, mock_seed: int = None):
         self.numbers_stream = []
@@ -21,6 +22,13 @@ class MockRandomState:
         assert n <= len(self.numbers_stream), "Not enough numbers in predefined numbers_stream"
         sampled_numbers = np.array([self.numbers_stream.pop() for i in range(0, n)])
         return sampled_numbers
+
+
+class TestPlayer(unittest.TestCase):
+    def setUp(self) -> None:
+        pass
+
+
 
 
 class TestBowling(unittest.TestCase):
