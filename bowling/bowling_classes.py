@@ -24,9 +24,9 @@ class Frame:
             return (self.round == other.round) and (self.frame_type == other.frame_type)
         return False
 
-# todo: bonus: add player injury (i.e., update/downgrade pins_hit_probability)
+
 class Player:
-    def __init__(self, pins_hit_probability: List[float] = None):
+    def __init__(self, pins_hit_probability: List[float] = None, name: str = 'Default Player'):
         """
         :param pins_hit_probability: the probability of hitting each pin. I.e., [probability of 0 pins, of 1, of 2, ..., of 10]
         """
@@ -34,6 +34,7 @@ class Player:
             pins_hit_probability = self._uniform_probability()
         self.pins_hit_probability = self.validate_player_skill_array(pins_hit_probability)
         self.cumulative_probability = self.map_pins_hit_probability_to_cumulative_probability(self.pins_hit_probability)
+        self.name = name
 
     @staticmethod
     def _uniform_probability():
@@ -48,12 +49,13 @@ class Player:
             raise Exception(f"The number of probabilities should be equal to the number of pins. Got {len(pins_hit_probability)} instead.")
         return pins_hit_probability
 
-    # todo: Remove throw_ball() method from Bowling()
-    # todo: add test for throw_ball
     @staticmethod
-    def throw_ball(cumulative_probability, throw_probability: float):
+    def throw_ball(cumulative_probability, throw_probability: float, verbose: bool = False):
         assert 0.0 <= throw_probability <= 1.0, f"Throw probability must be a probability, i.e., a number between [0. 1]. got {throw_probability} instead."
-        return bisect.bisect_left(cumulative_probability, throw_probability)
+        number_of_hit_pins = bisect.bisect_left(cumulative_probability, throw_probability)
+        if verbose:
+            print(number_of_hit_pins)
+        return number_of_hit_pins
 
     @staticmethod
     def map_pins_hit_probability_to_cumulative_probability(pins_hit_probability) -> np.array:
@@ -99,14 +101,8 @@ class Bowling:
         else:
             return self.calc_strike_score(frames, frame_idx)
 
-    # todo: remove when Player is complete. Remove tests
-    @staticmethod
-    def throw_ball(rand_pins_probability: float, verbose: bool = False):
-        assert 0 <= rand_pins_probability <= 1.0, "random pins probability must be a probability, i.e., [0, 1]"
-        number_of_hit_pins = int(round(rand_pins_probability*10, 0))
-        if verbose:
-            print(number_of_hit_pins)
-        return number_of_hit_pins
+    def throw_ball(self, cumulative_probability, throw_probability: float, verbose: bool = False):
+        return self.player.throw_ball(cumulative_probability, throw_probability, verbose)
 
     def calc_frame_type(self, number_of_hit_pins: int, number_of_throws: int, frame_idx: int):
         if frame_idx >= self.GAME_NUMBER_FRAMES:
@@ -120,10 +116,10 @@ class Bowling:
 
     def play_frame(self, frame_idx: int):
         pins_round = []
-        pins = self.throw_ball(self.random_state.random_sample(1)[0])
+        pins = self.throw_ball(self.player.cumulative_probability, self.random_state.random_sample(1)[0])
         pins_round.append(pins)
         if pins < self.NUMBER_OF_PINS:
-            next_throw_pins = min([self.NUMBER_OF_PINS - pins, self.throw_ball(self.random_state.random_sample(1)[0])])
+            next_throw_pins = min([self.NUMBER_OF_PINS - pins, self.throw_ball(self.player.cumulative_probability, self.random_state.random_sample(1)[0])])
             pins_round.append(next_throw_pins)
 
         frame_type = self.calc_frame_type(sum(pins_round), len(pins_round), frame_idx)
@@ -163,15 +159,8 @@ class Bowling:
         self.final_score = sum(self.scores)
 
 
-
-
-
-
-
-
-
-
-# if __name__ == '__main__':
-#     my_game = Bowling(12345)
-#     my_game.play_game()
-#     my_game.print_game_results()
+if __name__ == '__main__':
+    my_player = Player(name='Bruce Willis')
+    my_game = Bowling(my_player, 12345)
+    my_game.play_game()
+    my_game.print_game_results()

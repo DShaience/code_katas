@@ -5,13 +5,12 @@ from unittest.mock import patch
 import numpy as np
 from typing import List
 from math import isclose
-import bisect
 
 
 class MockRandomState:
     def __init__(self, mock_seed: int = None):
         self.numbers_stream = []
-        self.mock_seed = mock_seed  # unused
+        self.mock_seed = mock_seed  # unused. exists for compatibility with the original class during initialization
 
     def insert_mock_numbers_stream(self, numbers_stream: List[float]):
         assert len(numbers_stream) > 0, "Numbers set must be 1 or more elements"
@@ -30,15 +29,17 @@ class TestBowling(unittest.TestCase):
         self.player = Player()
         self.game = Bowling(self.player)
 
-    # @parameterized.expand([
-    #     [0.0, 0],
-    #     [0.2, 2],
-    #     [0.33, 3],
-    #     [0.46, 5],
-    #     [1.0, 10],
-    # ])
-    # def test_throw_ball(self, probability_input, expected):
-    #     self.assertEqual(self.game.throw_ball(probability_input), expected)
+    @parameterized.expand([
+        [0.0, 0],
+        [0.2, 2],
+        [0.33, 4],
+        [0.46, 5],
+        [1.0, 10],
+    ])
+    def test_throw_ball(self, probability_input, expected):
+        player = Player()
+        game = Bowling(player)
+        self.assertEqual(game.throw_ball(game.player.cumulative_probability, probability_input, verbose=True), expected)
 
     @parameterized.expand([
         [5, 1, 1, FrameTypes.NormalFrame],
