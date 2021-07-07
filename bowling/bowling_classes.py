@@ -147,6 +147,7 @@ class Bowling:
         for i, frame in enumerate(self.frames):
             frames_info.append([i+1, frame.round, frame_type_representation[frame.frame_type], self.scores[i]])
         print(tabulate([headers] + frames_info, numalign='center', stralign='center'))
+        print(f"Final score: {self.final_score}")
 
     def play_game(self):
         for frame_idx in range(0, self.GAME_NUMBER_FRAMES):
