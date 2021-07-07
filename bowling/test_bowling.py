@@ -27,17 +27,18 @@ class MockRandomState:
 
 class TestBowling(unittest.TestCase):
     def setUp(self) -> None:
-        self.game = Bowling()
+        self.player = Player()
+        self.game = Bowling(self.player)
 
-    @parameterized.expand([
-        [0.0, 0],
-        [0.2, 2],
-        [0.33, 3],
-        [0.46, 5],
-        [1.0, 10],
-    ])
-    def test_throw_ball(self, probability_input, expected):
-        self.assertEqual(self.game.throw_ball(probability_input), expected)
+    # @parameterized.expand([
+    #     [0.0, 0],
+    #     [0.2, 2],
+    #     [0.33, 3],
+    #     [0.46, 5],
+    #     [1.0, 10],
+    # ])
+    # def test_throw_ball(self, probability_input, expected):
+    #     self.assertEqual(self.game.throw_ball(probability_input), expected)
 
     @parameterized.expand([
         [5, 1, 1, FrameTypes.NormalFrame],
@@ -79,9 +80,8 @@ class TestBowling(unittest.TestCase):
     def test_calc_score(self, frames: List[Frame], frame_idx, expected):
         self.assertEqual(self.game.calc_score(frames, frame_idx), expected)
 
-    @staticmethod
-    def _test_frame_type(numbers_stream: List[float], frame_idx):
-        test_game = Bowling()
+    def _test_frame_type(self, numbers_stream: List[float], frame_idx):
+        test_game = Bowling(self.player)
         test_game.random_state.insert_mock_numbers_stream(numbers_stream)
         return test_game.play_frame(frame_idx)
 
@@ -104,7 +104,7 @@ class TestBowling(unittest.TestCase):
 
     @patch.object(np.random, 'RandomState', MockRandomState)
     def test_play_game(self):
-        test_game = Bowling()
+        test_game = Bowling(self.player)
         numbers_stream = [0.1, 0.3, 0.4, 0.2, 0.1, 0.7,  # 18
                           0.1, 0.2, 0.3, 0.4, 0.5, 0.5,  # 30
                           1.0, 1.0, 0.5, 0.5, 0.2, 0.2,  # 25 + 20 + 12 + 2 + 2 = 61
@@ -153,7 +153,6 @@ class TestPlayer(unittest.TestCase):
         expected_sum = np.sum(expected)
         test_sum = np.sum(Player.map_pins_hit_probability_to_cumulative_probability(probabilities))
         self.assertTrue(isclose(test_sum, expected_sum))
-
 
 
 

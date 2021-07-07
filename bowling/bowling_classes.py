@@ -24,17 +24,55 @@ class Frame:
             return (self.round == other.round) and (self.frame_type == other.frame_type)
         return False
 
+# todo: bonus: add player injury (i.e., update/downgrade pins_hit_probability)
+class Player:
+    def __init__(self, pins_hit_probability: List[float] = None):
+        """
+        :param pins_hit_probability: the probability of hitting each pin. I.e., [probability of 0 pins, of 1, of 2, ..., of 10]
+        """
+        if pins_hit_probability is None:
+            pins_hit_probability = self._uniform_probability()
+        self.pins_hit_probability = self.validate_player_skill_array(pins_hit_probability)
+        self.cumulative_probability = self.map_pins_hit_probability_to_cumulative_probability(self.pins_hit_probability)
+
+    @staticmethod
+    def _uniform_probability():
+        return [0.1] * Bowling.NUMBER_OF_PINS
+
+    @staticmethod
+    def validate_player_skill_array(pins_hit_probability):
+        probability_sum = sum(pins_hit_probability)
+        if not isclose(probability_sum, 1.0, rel_tol=0.0000001):
+            raise Exception(f"Probability must add-up to 1.0, but instead got: {probability_sum}")
+        if len(pins_hit_probability) != Bowling.NUMBER_OF_PINS:
+            raise Exception(f"The number of probabilities should be equal to the number of pins. Got {len(pins_hit_probability)} instead.")
+        return pins_hit_probability
+
+    # todo: Remove throw_ball() method from Bowling()
+    # todo: add test for throw_ball
+    @staticmethod
+    def throw_ball(cumulative_probability, throw_probability: float):
+        assert 0.0 <= throw_probability <= 1.0, f"Throw probability must be a probability, i.e., a number between [0. 1]. got {throw_probability} instead."
+        return bisect.bisect_left(cumulative_probability, throw_probability)
+
+    @staticmethod
+    def map_pins_hit_probability_to_cumulative_probability(pins_hit_probability) -> np.array:
+        cumulative_proba = np.cumsum(pins_hit_probability)
+        cumulative_proba_padded = np.insert(cumulative_proba, 0, 0.0)
+        cumulative_proba_normalized = (cumulative_proba_padded - np.min(cumulative_proba_padded)) / (np.max(cumulative_proba_padded) - np.min(cumulative_proba_padded))
+        return cumulative_proba_normalized
+
 
 class Bowling:
     GAME_NUMBER_FRAMES = 10
     NUMBER_OF_PINS = 10
 
-    def __init__(self, seed=12345):
+    def __init__(self, player: Player, seed=12345):
         self.random_state = np.random.RandomState(seed)
         self.scores = [np.nan] * (self.GAME_NUMBER_FRAMES + 2)
         self.final_score = 0
-
         self.frames: List[Frame] = []
+        self.player = player
 
     @staticmethod
     def calc_spare_score(frames: List[Frame], frame_idx):
@@ -125,43 +163,6 @@ class Bowling:
         self.final_score = sum(self.scores)
 
 
-# todo: bonus: add player injury (i.e., update/downgrade pins_hit_probability)
-class Player:
-    def __init__(self, pins_hit_probability: List[float] = None):
-        """
-        :param pins_hit_probability: the probability of hitting each pin. I.e., [probability of 0 pins, of 1, of 2, ..., of 10]
-        """
-        if pins_hit_probability is None:
-            pins_hit_probability = self._uniform_probability()
-        self.pins_hit_probability = self.validate_player_skill_array(pins_hit_probability)
-        self.cumulative_probability = self.map_pins_hit_probability_to_cumulative_probability(self.pins_hit_probability)
-
-    @staticmethod
-    def _uniform_probability():
-        return [0.1] * Bowling.NUMBER_OF_PINS
-
-    @staticmethod
-    def validate_player_skill_array(pins_hit_probability):
-        probability_sum = sum(pins_hit_probability)
-        if not isclose(probability_sum, 1.0, rel_tol=0.0000001):
-            raise Exception(f"Probability must add-up to 1.0, but instead got: {probability_sum}")
-        if len(pins_hit_probability) != Bowling.NUMBER_OF_PINS:
-            raise Exception(f"The number of probabilities should be equal to the number of pins. Got {len(pins_hit_probability)} instead.")
-        return pins_hit_probability
-
-    # todo: Remove throw_ball() method from Bowling()
-    # todo: add test for throw_ball
-    @staticmethod
-    def throw_ball(cumulative_probability, throw_probability: float):
-        assert 0.0 <= throw_probability <= 1.0, f"Throw probability must be a probability, i.e., a number between [0. 1]. got {throw_probability} instead."
-        return bisect.bisect_left(cumulative_probability, throw_probability)
-
-    @staticmethod
-    def map_pins_hit_probability_to_cumulative_probability(pins_hit_probability) -> np.array:
-        cumulative_proba = np.cumsum(pins_hit_probability)
-        cumulative_proba_padded = np.insert(cumulative_proba, 0, 0.0)
-        cumulative_proba_normalized = (cumulative_proba_padded - np.min(cumulative_proba_padded)) / (np.max(cumulative_proba_padded) - np.min(cumulative_proba_padded))
-        return cumulative_proba_normalized
 
 
 
