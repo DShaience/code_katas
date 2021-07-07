@@ -127,16 +127,21 @@ class Bowling:
 
 # todo: bonus: add player injury (i.e., update/downgrade pins_hit_probability)
 class Player:
-    def __init__(self, pins_hit_probability: List[float]):
+    def __init__(self, pins_hit_probability: List[float] = None):
         """
         :param pins_hit_probability: the probability of hitting each pin. I.e., [probability of 0 pins, of 1, of 2, ..., of 10]
         """
-        self.pins_hit_probability = self.validate_player_skill(pins_hit_probability)
+        if pins_hit_probability is None:
+            pins_hit_probability = self._uniform_probability()
+        self.pins_hit_probability = self.validate_player_skill_array(pins_hit_probability)
         self.cumulative_probability = self.map_pins_hit_probability_to_cumulative_probability(self.pins_hit_probability)
-        #  then the answer to which ball was hit is simply finding the bisect-left value in this array
 
     @staticmethod
-    def validate_player_skill(pins_hit_probability):
+    def _uniform_probability():
+        return [0.1] * Bowling.NUMBER_OF_PINS
+
+    @staticmethod
+    def validate_player_skill_array(pins_hit_probability):
         probability_sum = sum(pins_hit_probability)
         if not isclose(probability_sum, 1.0, rel_tol=0.0000001):
             raise Exception(f"Probability must add-up to 1.0, but instead got: {probability_sum}")
@@ -148,7 +153,7 @@ class Player:
     # todo: add test for throw_ball
     @staticmethod
     def throw_ball(cumulative_probability, throw_probability: float):
-        assert 0.0 <= throw_probability <= 1.0, "Throw probability must be a probability, i.e., a number between [0. 1]"
+        assert 0.0 <= throw_probability <= 1.0, f"Throw probability must be a probability, i.e., a number between [0. 1]. got {throw_probability} instead."
         return bisect.bisect_left(cumulative_probability, throw_probability)
 
     @staticmethod
@@ -159,7 +164,13 @@ class Player:
         return cumulative_proba_normalized
 
 
-if __name__ == '__main__':
-    my_game = Bowling(12345)
-    my_game.play_game()
-    my_game.print_game_results()
+
+
+
+
+
+
+# if __name__ == '__main__':
+#     my_game = Bowling(12345)
+#     my_game.play_game()
+#     my_game.print_game_results()

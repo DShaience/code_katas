@@ -137,13 +137,13 @@ class TestPlayer(unittest.TestCase):
 
     def test_validate_player_skill(self):
         probabilities = [0.1] * (Bowling.NUMBER_OF_PINS + 1)
-        self.assertRaises(Exception, Player.validate_player_skill, probabilities)
+        self.assertRaises(Exception, Player.validate_player_skill_array, probabilities)
 
         probabilities = [0.25] * 4
-        self.assertRaises(Exception, Player.validate_player_skill, probabilities)
+        self.assertRaises(Exception, Player.validate_player_skill_array, probabilities)
 
         probabilities = [0.1] * Bowling.NUMBER_OF_PINS
-        self.assertEqual(Player.validate_player_skill(probabilities), probabilities)
+        self.assertEqual(Player.validate_player_skill_array(probabilities), probabilities)
 
         [0] + np.cumsum(probabilities)
 
@@ -154,17 +154,7 @@ class TestPlayer(unittest.TestCase):
         test_sum = np.sum(Player.map_pins_hit_probability_to_cumulative_probability(probabilities))
         self.assertTrue(isclose(test_sum, expected_sum))
 
-        # self.assertEqual(Player.map_pins_hit_probability_to_cumulative_probability(probabilities), expected)
-        # self.assertTrue(np.equal(Player.map_pins_hit_probability_to_cumulative_probability(probabilities), expected))
 
-        cumul = Player.map_pins_hit_probability_to_cumulative_probability(probabilities)
-        # [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-        # cumul_np = np.array(cumul)
-        # cumul_ranged = (cumul_np - np.min(cumul_np)) / (np.max(cumul_np) - np.min(cumul_np))
-
-        val = 1.0
-        # print(bisect.bisect_left(cumul, val))
-        # print(probabilities)
 
 
 
