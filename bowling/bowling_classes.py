@@ -3,6 +3,7 @@ from typing import List
 from enum import Enum
 import numpy as np
 from math import isclose
+from tabulate import tabulate
 
 
 class FrameTypes(Enum):
@@ -135,10 +136,17 @@ class Bowling:
         return frame_scores
 
     def print_game_results(self):
+        frame_type_representation = {
+            FrameTypes.NormalFrame: "",
+            FrameTypes.Spare: "/",
+            FrameTypes.Strike: "X"
+        }
+        print(f"Player: {self.player.name}")
+        headers = ['Frame', 'Pins hit', 'Frame type', 'Frame score']
+        frames_info = []
         for i, frame in enumerate(self.frames):
-            print(f"Round #{i+1}: Pins: {frame.round} Score: {self.scores[i]}")
-        print()
-        print(f"Final score: {self.final_score}")
+            frames_info.append([i+1, frame.round, frame_type_representation[frame.frame_type], self.scores[i]])
+        print(tabulate([headers] + frames_info, numalign='center', stralign='center'))
 
     def play_game(self):
         for frame_idx in range(0, self.GAME_NUMBER_FRAMES):

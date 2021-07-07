@@ -150,7 +150,6 @@ class TestPlayer(unittest.TestCase):
         probabilities = [0.1] * Bowling.NUMBER_OF_PINS
         self.assertEqual(Player.validate_player_skill_array(probabilities), probabilities)
 
-
     def test_map_pins_hit_probability_to_cumulative_probability(self):
         probabilities = [0.1] * 10
         expected = np.array([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
