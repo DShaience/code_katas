@@ -47,6 +47,8 @@ class Player:
             raise Exception(f"Probability must add-up to 1.0, but instead got: {probability_sum}")
         if len(pins_hit_probability) != Bowling.NUMBER_OF_PINS:
             raise Exception(f"The number of probabilities should be equal to the number of pins. Got {len(pins_hit_probability)} instead.")
+        if any([proba == 0.0 for proba in pins_hit_probability]):
+            raise Exception(f"All pins must have non-zero probability, even if very small")
         return pins_hit_probability
 
     @staticmethod

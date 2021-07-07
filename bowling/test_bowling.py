@@ -39,7 +39,7 @@ class TestBowling(unittest.TestCase):
     def test_throw_ball(self, probability_input, expected):
         player = Player()
         game = Bowling(player)
-        self.assertEqual(game.throw_ball(game.player.cumulative_probability, probability_input, verbose=True), expected)
+        self.assertEqual(game.throw_ball(game.player.cumulative_probability, probability_input), expected)
 
     @parameterized.expand([
         [5, 1, 1, FrameTypes.NormalFrame],
@@ -143,10 +143,13 @@ class TestPlayer(unittest.TestCase):
         probabilities = [0.25] * 4
         self.assertRaises(Exception, Player.validate_player_skill_array, probabilities)
 
+        probabilities = [0.0] * (Bowling.NUMBER_OF_PINS - 1)
+        probabilities.append(1.0)
+        self.assertRaises(Exception, Player.validate_player_skill_array, probabilities)
+
         probabilities = [0.1] * Bowling.NUMBER_OF_PINS
         self.assertEqual(Player.validate_player_skill_array(probabilities), probabilities)
 
-        [0] + np.cumsum(probabilities)
 
     def test_map_pins_hit_probability_to_cumulative_probability(self):
         probabilities = [0.1] * 10
