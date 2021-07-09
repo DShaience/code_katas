@@ -10,7 +10,7 @@ from math import isclose
 class MockRandomState:
     def __init__(self, mock_seed: int = None):
         self.numbers_stream = []
-        self.mock_seed = mock_seed  # unused. exists for compatibility with the original class during initialization
+        # mock_seed exists for compatibility with the non-mock class
 
     def insert_mock_numbers_stream(self, numbers_stream: List[float]):
         assert len(numbers_stream) > 0, "Numbers set must be 1 or more elements"
