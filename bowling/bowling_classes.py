@@ -53,14 +53,6 @@ class Player:
         return pins_hit_probability
 
     @staticmethod
-    def throw_ball(cumulative_probability, throw_probability: float, verbose: bool = False):
-        assert 0.0 <= throw_probability <= 1.0, f"Throw probability must be a probability, i.e., a number between [0. 1]. got {throw_probability} instead."
-        number_of_hit_pins = bisect.bisect_left(cumulative_probability, throw_probability)
-        if verbose:
-            print(number_of_hit_pins)
-        return number_of_hit_pins
-
-    @staticmethod
     def map_pins_hit_probability_to_cumulative_probability(pins_hit_probability) -> np.array:
         cumulative_proba = np.cumsum(pins_hit_probability)
         cumulative_proba_padded = np.insert(cumulative_proba, 0, 0.0)
@@ -104,8 +96,13 @@ class Bowling:
         else:
             return self.calc_strike_score(frames, frame_idx)
 
-    def throw_ball(self, cumulative_probability, throw_probability: float, verbose: bool = False):
-        return self.player.throw_ball(cumulative_probability, throw_probability, verbose)
+    @staticmethod
+    def throw_ball(cumulative_probability, throw_probability: float, verbose: bool = False):
+        assert 0.0 <= throw_probability <= 1.0, f"Throw probability must be a probability, i.e., a number between [0. 1]. got {throw_probability} instead."
+        number_of_hit_pins = bisect.bisect_left(cumulative_probability, throw_probability)
+        if verbose:
+            print(number_of_hit_pins)
+        return number_of_hit_pins
 
     def calc_frame_type(self, number_of_hit_pins: int, number_of_throws: int, frame_idx: int):
         if frame_idx >= self.GAME_NUMBER_FRAMES:
