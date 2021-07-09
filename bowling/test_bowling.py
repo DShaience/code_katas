@@ -9,18 +9,18 @@ from math import isclose
 
 class MockRandomState:
     def __init__(self, mock_seed: int = None):
-        self.numbers_stream = []
+        self.mock_random_numbers = []
         # mock_seed exists for compatibility with the non-mock class
 
-    def insert_mock_numbers_stream(self, numbers_stream: List[float]):
-        assert len(numbers_stream) > 0, "Numbers set must be 1 or more elements"
-        numbers_stream.reverse()
-        self.numbers_stream = numbers_stream
+    def insert_mock_numbers_stream(self, mock_random_numbers: List[float]):
+        assert len(mock_random_numbers) > 0, "Numbers set must be 1 or more elements"
+        mock_random_numbers.reverse()
+        self.mock_random_numbers = mock_random_numbers
 
     def random_sample(self, n):
         assert n > 0, "Can't sample less than 1 number"
-        assert n <= len(self.numbers_stream), "Not enough numbers in predefined numbers_stream"
-        sampled_numbers = np.array([self.numbers_stream.pop() for i in range(0, n)])
+        assert n <= len(self.mock_random_numbers), "Not enough numbers in predefined mock_random_numbers"
+        sampled_numbers = np.array([self.mock_random_numbers.pop() for i in range(0, n)])
         return sampled_numbers
 
 
