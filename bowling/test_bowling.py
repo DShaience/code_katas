@@ -106,12 +106,12 @@ class TestBowling(unittest.TestCase):
     @patch.object(np.random, 'RandomState', MockRandomState)
     def test_play_game(self):
         test_game = Bowling(self.player)
-        numbers_stream = [0.1, 0.3, 0.4, 0.2, 0.1, 0.7,  # 18
-                          0.1, 0.2, 0.3, 0.4, 0.5, 0.5,  # 30
-                          1.0, 1.0, 0.5, 0.5, 0.2, 0.2,  # 25 + 20 + 12 + 2 + 2 = 61
-                          0.2                            # Total: 18 + 30 + 61 = 91 + 18 = 109
-                          ]
-        test_game.random_state.insert_mock_numbers_stream(numbers_stream)
+        mock_random_numbers = [0.1, 0.3, 0.4, 0.2, 0.1, 0.7,  # 18
+                               0.1, 0.2, 0.3, 0.4, 0.5, 0.5,  # 30
+                               1.0, 1.0, 0.5, 0.5, 0.2, 0.2,  # 25 + 20 + 12 + 2 + 2 = 61
+                               0.2                            # Total: 18 + 30 + 61 = 91 + 18 = 109
+                              ]
+        test_game.random_state.insert_mock_numbers_stream(mock_random_numbers)
         test_game.play_game()
         self.assertEqual(test_game.final_score, 109)
 
