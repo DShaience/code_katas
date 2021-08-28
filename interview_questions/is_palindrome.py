@@ -1,3 +1,6 @@
+"""
+Test if a string is palindrome or not
+"""
 
 
 def is_palindrome(input_str: str ) -> bool:
