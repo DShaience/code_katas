@@ -12,27 +12,50 @@ class Substring:
     def show(self):
         print(f"({self.start_idx}, {self.end_idx})")
 
+    def get_range(self):
+        return range(self.start_idx, self.end_idx)
+
 
 if __name__ == '__main__':
 
-    my_str = 'ABCDCDC'
-    substr = 'CDC'
+    """
+    Algorithm
+    1. run over the entire string 1-n with str_idx until the end
+    1.1. run over the substring 1-m with sb_str_idx until the end (check for of out-of-bounds with str_idx)
+    1.2. if the entire substr matches, add indices of start and end 
+    """
 
-    substrs = []
-    str_idx = 0
-    while str_idx < len(my_str) - 1:
-        substr_idx = 0
-        sub_str_pos = Substring(str_idx, str_idx)
-        while (substr_idx < len(substr) - 1) & (my_str[str_idx + substr_idx] == substr[substr_idx]):
-            substr_idx += 1
-            sub_str_pos.end_idx += 1
+    org_str = 'ABCDCDC'
+    sub_str = 'CDC'
 
-        if len(sub_str_pos) > 0:
-            substrs.append(sub_str_pos)
+    # org_str = 'DDDDDDD'
+    # sub_str = 'D'
 
-        str_idx += 1
+    n_org = len(org_str)
+    n_sub = len(sub_str)
 
-    for i in range(0, len(substrs)):
-        substrs[i].show()
+    org_idx = 0
+    matches = []
+    while org_idx < n_org:
+
+        remaining_chars_org = n_org - org_idx
+        if remaining_chars_org < n_sub:
+            break
+
+        if org_str[org_idx:(org_idx+n_sub)] == sub_str:
+            matches.append(Substring(org_idx, org_idx+n_sub))
+
+        org_idx += 1
+
+
+    for i in range(0, len(matches)):
+        matches[i].show()
+        print(org_str[matches[i].start_idx: matches[i].end_idx])
+
+    print(f"\nTotal number of matches: {len(matches)}")
+
+
+
+
 
 
