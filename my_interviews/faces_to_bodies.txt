@@ -1,0 +1,84 @@
+
+def calc_volume(bb) -> float:
+    return volume
+
+
+# def calc_body_face_relation(face, body):
+#     return 
+
+def calc_volumes(bodies_or_faces):
+    for body_or_face in bodies_or_faces:
+        body_or_face['volume'] = calc_volume(body_or_face['BB'])
+    
+    return bodies_or_faces
+
+
+def is_intersecting_bb_face(face, body):
+    face_points = face['BB'] # [x, y, w, h]
+    body_points = face['BB'] # [x, y, w, h]
+
+
+
+    # *******
+    # *
+    # 
+    # 
+    # 
+
+
+    return bool # (True/False)
+
+
+def most_common_id(list_of_ids):
+    return most_common_id
+
+
+def match_faces_bodies(faces, bodies):
+
+    
+    return match_faces_bodies
+
+# Face: json: id, frame, BB
+# Body: json: id, frame, BB (contains face)
+from collections import defaultdict
+
+# unique_bodies_dict = dict()  # id of body as key
+unique_faces_dict = defaultdict(list)   # id of face as key  #1: {volumes: [vol_a, .., ..], body_id: [a, b, c, ..,]}
+
+frames_bodies = {}   # key frame-id: [bodies in frame]
+frames_faces = {}    # key frame-id: [faces in frame]
+
+frames = set(frames_bodies.keys).intersection(set(frames_faces.keys))
+
+for i, frame in enumerate(frames):
+    frame_bodies = frames_bodies[i]
+    frame_faces = frames_faces[i]
+    if (len(frame_bodies) == 0) or (len(frame_faces) == 0):
+        continue
+
+    for body in frame_bodies:
+        for face in frame_faces:
+            if is_intersecting_bb_face(body, face):
+                vol_body = calc_volume(body['BB'])
+                vol_face = calc_volume(face['BB'])
+
+                unique_faces_dict[face['id']]['volumes'].append(vol_body)
+                unique_faces_dict[face['id']]['matching_bodies'].append(body['id'])
+
+
+face_to_body = dict()
+for face in unique_faces_dict:
+    matching_body_id_candidate = most_common_id(face['matching_bodies'])
+    face_to_body[face['id']] = matching_body_id_candidate
+
+
+
+
+
+
+
+
+
+
+
+
